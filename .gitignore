@@ -5,7 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+/vendorgit
 .env.backup
 .env.production
 .phpactor.json
