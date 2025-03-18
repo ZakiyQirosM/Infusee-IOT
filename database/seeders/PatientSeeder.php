@@ -8,20 +8,22 @@ use Illuminate\Database\Seeder;
 
 class PatientSeeder extends Seeder
 {
-    public function run(): void
+
+    public function run()
     {
-        $patient = Patient::create([
-            'name' => 'Sa Kitji Wo',
-            'room_number' => '911',
-            'device_id' => 'DIF001'
+        Patient::create([
+            'no_reg_pasien' => 'REG123',
+            'nama_pasien' => 'Budi Santoso',
+            'umur' => 45,
+            'no_ruangan' => 'Kamar 101'
         ]);
 
-        InfusionSession::create([
-            'patient_id' => $patient->id,
-            'current_volume' => 800,
-            'total_volume' => 1000,
-            'drop_rate' => 33,
-            'remaining_percentage' => 80
+        Patient::create([
+            'no_reg_pasien' => 'REG124',
+            'nama_pasien' => 'Ani Lestari',
+            'umur' => 38,
+            'no_ruangan' => 'Kamar 202'
         ]);
     }
+
 }

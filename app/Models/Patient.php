@@ -2,14 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Patient extends Model
 {
-    protected $fillable = ['name', 'room_number', 'device_id'];
+    use HasFactory;
+
+    protected $table = 'table_pasien'; // Nama tabel di database
+
+    protected $fillable = [
+        'no_reg_pasien', // Kolom di database
+        'nama_pasien',
+        'umur',
+        'no_ruangan',
+    ];
 
     public function infusionSessions()
     {
-        return $this->hasMany(InfusionSession::class);
+        return $this->hasMany(InfusionSession::class, 'no_reg_pasien', 'no_reg_pasien');
     }
+
 }

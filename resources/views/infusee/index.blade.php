@@ -12,12 +12,12 @@
             {{-- Header --}}
             <div class="card-header">
                 <div class="left">
-                    <h4>{{ $infusee['name'] }}</h4>
+                    <h4>{{ $infusee['nama_pasien'] }}</h4>
                 </div>
                 <div class="right">
                 <span>
                     <i class="fa-solid fa-circle-check status-icon"></i>
-                    {{ $infusee['device'] }}
+                    {{ $infusee['id_perangkat_infusee'] }}
                 </span>
                 </div>
             </div>
@@ -28,10 +28,10 @@
             {{-- Footer --}}
             <div class="card-footer">
                 <div class="left">
-                    <p>No Kamar: {{ '2.2.' . ($index + 1) }}</p>
+                    <p>No Kamar: {{$infusee ['no_ruangan']}}</p>
                 </div>
                 <div class="right">
-                    <p>TPM: {{ $infusee['tpm_rate'] }}</p>
+                    <p>TPM: {{ $infusee ['laju_tetes_tpm']}}</p>
                 </div>
             </div>
 
@@ -43,7 +43,7 @@
             {{-- Timer --}}
             <div class="Timer">
                 <P class="labtime">Waktu Infus:</p>
-                <p class="timer">{{ $infusee['timestamp'] }}</p>
+                <p class="timer">{{ $infusee['timestamp_infus'] }}</p>
             </div>
         </div>
         @endforeach
@@ -80,7 +80,7 @@
                 data: {
                     labels: ['Sisa', 'Terpakai'],
                     datasets: [{
-                        data: [{{ $infusee['percentage'] }}, {{ 100 - $infusee['percentage'] }}],
+                        data: [{{ $infusee['persentase_infus_menit'] }}, {{ 100 - $infusee['persentase_infus_menit'] }}],
                         backgroundColor: ['{{ $infusee['color'] }}', '#e0e0e0'],
                         borderWidth: 2
                     }]

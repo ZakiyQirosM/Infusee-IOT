@@ -12,6 +12,8 @@ Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index'
 // Route untuk menampilkan form registrasi
 Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
 Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+Route::get('/register/search', [RegisterController::class, 'search'])->name('register.search');
 
 // Route untuk menyimpan data perangkat (POST)
 Route::post('/devices', [DeviceController::class, 'store'])->name('devices.store');
+
