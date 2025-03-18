@@ -5,7 +5,11 @@
 /public/storage
 /storage/*.key
 /storage/pail
+<<<<<<< HEAD
 /vendorgit
+=======
+/vendor
+>>>>>>> 3a1c06adfe7c28ace33fd12572ac81d8bad60bfa
 .env.backup
 .env.production
 .phpactor.json

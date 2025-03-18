@@ -9,7 +9,7 @@ class Pasien extends Model
     protected $primaryKey = 'no_reg_pasien';
     public $incrementing = false;
     protected $table = "table_pasien";
-    protected $keytype = 'varchar';
+    protected $keyType = 'varchar';
     protected $fillable = ['no_reg_pasien', 'nama_pasien', 'umur','no_ruangan'];
 
     public function DosisInfusPasien()
