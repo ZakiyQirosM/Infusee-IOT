@@ -1,0 +1,137 @@
+/* === GENERAL === */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #095D7E;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    left: -350px; /* Hide sidebar */
+    top: 0;
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar.show {
+    left: 0;
+}
+
+.sidebar .logo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.sidebar .toggle-btn {
+    background-color: transparent;
+    border: none;
+    color: #ff3333;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar ul li {
+    list-style: none;
+    padding: 12px;
+    margin: 5px 0;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+}
+
+.sidebar ul li.active {
+    background-color: #00C7B4; /* Warna merah untuk highlight */
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.sidebar ul li.active a {
+    color: #fff; /* Warna teks menjadi putih saat aktif */
+    font-weight: bold;
+}
+
+
+.sidebar ul li:not(.active):hover {
+    background-color: #053b51; /* Warna biru tua untuk highlight */
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+/* === CONTENT === */
+.content {
+    flex: 1;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+    margin-left: 0;
+}
+
+.content.shift {
+    margin-left: 250px;
+}
+
+/* === TOGGLE BUTTON (KETIKA SIDEBAR DITUTUP) === */
+.toggle-btn-open {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    background-color: #095D7E;
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin-top: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.toggle-btn-open.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.infusee-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.infusee-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.infusee-card canvas {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 auto;
+}
