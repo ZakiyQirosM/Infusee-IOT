@@ -15,28 +15,26 @@ class RegisterController extends Controller
     }
 
     // Menangani pencarian pasien berdasarkan no_reg_pasien
-    public function search(Request $request)
+        public function search(Request $request)
     {
         $request->validate([
-            'no_reg_pasien' => 'required|string',
+            'no_reg_pasien' => 'required'
         ]);
 
-        $noRegister = $request->input('no_reg_pasien');
+        // Ambil data pasien berdasarkan no_reg_pasien
+        $pasien = Pasien::where('no_reg_pasien', $request->no_reg_pasien)->first();
 
-        // Cari data pasien
-        $patient = Pasien::where('no_reg_pasien', $noRegister)->first();
-
-        if ($patient) {
-            return response()->json([
-                'no_reg_pasien' => $patient->no_reg_pasien,
-                'nama_pasien' => $patient->nama_pasien,
-                'umur' => $patient->umur,
-                'no_ruangan' => $patient->no_ruangan
-            ]);
+        if (!$pasien) {
+            return redirect()->back()->withErrors(['No registrasi tidak ditemukan']);
         }
 
-        return response()->json(['error' => 'Data pasien tidak ditemukan.'], 404);
+        return view('register.index', [
+            'nama_pasien' => $pasien->nama_pasien,
+            'umur' => $pasien->umur,
+            'no_ruangan' => $pasien->no_ruangan
+        ]);
     }
+
 
     // Menangani pengiriman data dari form registrasi
     public function store(Request $request)
