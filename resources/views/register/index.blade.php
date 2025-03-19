@@ -9,6 +9,7 @@
         @csrf
         <h2 class="register-title">
             Registrasi Infusee
+<<<<<<< HEAD
         </h2>
 
          {{-- Tampilkan pesan sukses jika ada --}}
@@ -26,6 +27,10 @@
                 @endforeach 
             </div>
         @endif
+=======
+        </h4>
+
+>>>>>>> d7510f2 (add file migration, model, dan controler, serta cari data pasien bisa)
         <div class="divider-reg"></div>
 
         {{-- No Register --}}
@@ -79,6 +84,7 @@
     </form>
 </div>
 @endsection
+<<<<<<< HEAD
 
 <script>
     document.getElementById('register-form').addEventListener('submit', (e) => {
@@ -102,3 +108,5 @@
         .catch(error => console.error('Error:', error));
     });
 </script>
+=======
+>>>>>>> d7510f2 (add file migration, model, dan controler, serta cari data pasien bisa)

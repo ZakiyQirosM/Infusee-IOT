@@ -102,4 +102,8 @@
         @endforeach
     });
 </script>
+<<<<<<< HEAD
 @endsection
+=======
+@endsection
+>>>>>>> d7510f2 (add file migration, model, dan controler, serta cari data pasien bisa)
