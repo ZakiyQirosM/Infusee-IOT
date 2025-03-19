@@ -1,69 +1,35 @@
 @extends('layouts.main')
 
-@section('title', 'Device List')
+@section('title', 'Pilih Device')
 
 @section('content')
-<div class="container">
-    <h1 class="text-center my-4">Pilih Perangkat Aktif</h1>
+<div class="device-container">
+    <h2>Pilih Device untuk Pasien</h2>
 
-    @if (count($activeDevices) > 0)
-        <div class="device-list">
-            @foreach ($activeDevices as $device)
-                <button class="device-btn" onclick="selectDevice('{{ $device['id'] }}', '{{ $device['ip'] }}')">
-                    {{ $device['id'] }} - {{ $device['ip'] }}
-                </button>
+    {{-- Tabel daftar perangkat --}}
+    <table class="device-table">
+        <thead>
+            <tr>
+                <th>ID Perangkat</th>
+                <th>Alamat IP</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($devices as $device)
+                <tr>
+                    <td>{{ $device->id_perangkat_infusee }}</td>
+                    <td>{{ $device->alamat_ip_infusee }}</td>
+                    <td>
+                        <form action="{{ route('devices.assign') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="device_id" value="{{ $device->id_perangkat_infusee }}">
+                            <button type="submit" class="btn-pilih">Pilih</button>
+                        </form>
+                    </td>
+                </tr>
             @endforeach
-        </div>
-    @else
-        <p class="text-center">Tidak ada perangkat aktif yang tersedia.</p>
-    @endif
+        </tbody>
+    </table>
 </div>
-
-<script>
-    function selectDevice(id, ip) {
-        alert(`Perangkat ${id} dengan IP ${ip} dipilih`);
-        // Redirect ke halaman infusee berdasarkan ID perangkat
-        window.location.href = @json(route('infusee.index'));
-    }
-</script>
-
-
-{{-- Styling --}}
-<style>
-    .container {
-        max-width: 800px;
-        margin: 20px auto;
-    }
-
-    h1 {
-        color: #333;
-    }
-
-    .device-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .device-btn {
-        background-color: #00C7B4;
-        color: #fff;
-        padding: 10px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-
-    .device-btn:hover {
-        background-color: #14967F;
-    }
-
-    .text-center {
-        text-align: center;
-        color: #777;
-        margin-top: 20px;
-    }
-</style>
 @endsection

@@ -2,57 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
+use App\Models\InfusionSession;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    // Menampilkan daftar perangkat aktif
     public function index()
     {
-        $devices = [
-            [
-                'id' => 'DIF001',
-                'status' => true,
-                'ip' => '192.168.1.101'
-            ],
-            [
-                'id' => 'DIF002',
-                'status' => false,
-                'ip' => '192.168.1.102'
-            ],
-            [
-                'id' => 'DIF003',
-                'status' => true,
-                'ip' => '192.168.1.103'
-            ],
-            [
-                'id' => 'DIF004',
-                'status' => false,
-                'ip' => '192.168.1.104'
-            ]
-        ];
+        $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee')->get();
 
-        // Filter hanya device yang aktif
-        $activeDevices = array_filter($devices, function ($device) {
-            return $device['status'] === true;
-        });
-
-        return view('devices.index', compact('activeDevices'));
+        return view('devices.index', compact(
+            'devices',
+        ));
     }
 
-    // Proses pengiriman data dari form registrasi
-    public function store(Request $request)
+
+    // ✅ Menyimpan data ke infusion_sessions
+    public function assign(Request $request)
     {
-        // Validasi data dari form
         $data = $request->validate([
-            'no_register' => 'required|string',
-            'nama_pasien' => 'required|string',
-            'durasi' => 'required|integer|min:0',
+            'device_id' => 'required|exists:table_perangkat_infusee,id_perangkat_infusee',
         ]);
 
-        // Lakukan sesuatu dengan data (misalnya simpan ke database atau proses lainnya)
+        InfusionSession::create([
+            'no_reg_pasien' => session('no_reg_pasien'),
+            'id_perangkat_infusee' => $data['device_id'],
+            'no_pegawai' => session('no_pegawai'),
+            'dosis_infus' => '100ml',
+            'laju_tetes_tpm' => 20,
+            'persentase_infus_menit' => 80,
+            'status_anomali_infus' => 'Normal',
+            'timestamp_infus' => now(),
+        ]);
 
-        // Redirect ke halaman daftar perangkat aktif
-        return redirect()->route('device.index')->with('success', 'Alat berhasil dicari.');
+        session()->forget([
+            'no_reg_pasien',
+            'nama_pasien',
+            'umur',
+            'no_ruangan',
+            'durasi',
+        ]);
+
+        return redirect()->route('register.index')->with('success', 'Data infus berhasil disimpan!');
     }
+
 }

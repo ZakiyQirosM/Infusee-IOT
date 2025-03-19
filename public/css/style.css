@@ -135,3 +135,221 @@ body {
     height: 100px !important;
     margin: 0 auto;
 }
+
+.container {
+    max-width: 1200px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.heading {
+    color: #777;
+    text-align:center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header,
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.card-header .left h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.card-header .right {
+    font-size: 14px;
+    text-align: right;
+    color: #666;
+}
+
+.divider {
+    height: 2px;
+    background-color: #00C7B4;
+    border-radius: 1px;
+    margin-top: 8px;
+}
+
+.status-icon {
+    color: #00cc44; /* Warna hijau */
+    margin-left: 5px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+
+.card-footer .left,
+.card-footer .right {
+    font-size: 14px;
+    color: #666;
+    margin-top: -8px;
+}
+
+.labtime {
+font-size: 14px;
+text-align: center;
+color: #053b51;
+font-weight: bold;
+margin-top:20px;
+margin-bottom:-30px;
+}
+
+/* Style untuk timer */
+.timer {
+    font-size: 32px;
+    text-align: center;
+    color: #00C7B4; /* Warna teks hitam */
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+    margin-bottom:0px;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+canvas {
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.register-container {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Judul */
+.register-title {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+}
+
+.divider-reg {
+    height: 2px;
+    background-color: #00C7B4;
+    border-radius: 1px;
+    margin-top: 30px;
+    margin-bottom: 30px;    
+}
+
+/* Group Form */
+.form-group {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+/* Label form */
+.register-label {
+    width: 25%;
+    font-weight: 500;
+    color: #333;
+    padding-right: 10px;
+}
+
+/* Input container */
+.register-input-container {
+    display: flex;
+    align-items: center;
+    width: 60%;
+}
+
+.register-input-container span {
+    margin-right: 5px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Input */
+.register-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+    font-size: 16px;
+    color: #333;
+}
+
+.register-input:focus {
+    outline: none;
+    border-color: #00C7B4;
+    box-shadow: 0 0 5px rgba(0, 199, 180, 0.5);
+}
+
+/* Input disabled */
+.register-input-disabled {
+    background-color: #c4c4c4;
+    color: #999;
+}
+
+/* Tombol Cari */
+.register-btn-search {
+    background-color: #00C7B4;
+    color: #fff;    
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-left: 10px;
+}
+
+.register-btn-search:hover {
+    background-color: #009688;
+}
+
+/* Tombol Submit */
+.register-btn-submit {
+    background-color: #00C7B4;
+    color: #fff;
+    padding: 14px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 20px;
+}
+
+.register-btn-submit:hover {
+    background-color: #009688;
+}

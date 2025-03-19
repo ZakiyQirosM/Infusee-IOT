@@ -9,7 +9,7 @@ class InfusionSession extends Model
 {
     use HasFactory;
 
-    protected $table = 'table_dosis_infus_pasien'; // Nama tabel di database
+    protected $table = 'table_dosis_infus_pasien'; 
 
     protected $fillable = [
         'no_reg_pasien',
@@ -27,6 +27,16 @@ class InfusionSession extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class, 'no_reg_pasien', 'no_reg_pasien');
+    }
+
+    public function nurse()
+    {
+        return $this->belongsTo(Nurse::class, 'no_pegawai', 'no_pegawai');
+    }
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class, 'id_perangkat_infusee', 'id_perangkat_infusee');
     }
 
 }

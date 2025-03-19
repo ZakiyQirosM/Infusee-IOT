@@ -10,11 +10,13 @@ class InfuseeController extends Controller
 {
     public function index()
     {
+        // Ambil data pasien dan sesi infus terkait
         $patients = Patient::with('infusionSessions')->get();
 
+        // Format data untuk view
         $infusees = $patients->map(function ($patient) {
-            $session = $patient->infusionSessions->first();
-
+            $session = $patient->infusionSessions->first(); // Ambil sesi pertama (jika ada)
+    
             // Hitung selisih waktu dari timestamp ke waktu sekarang
             $remainingTime = null;
             if ($session && $session->timestamp_infus) {
@@ -37,6 +39,7 @@ class InfuseeController extends Controller
 
         return view('infusee.index', compact('infusees'));
     }
+ 
 
     private function getColorBasedOnPercentage($value)
     {

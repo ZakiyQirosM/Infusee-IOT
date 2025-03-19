@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +8,15 @@ class Patient extends Model
 {
     use HasFactory;
 
-    protected $table = 'table_pasien'; // Nama tabel di database
+    protected $table = 'table_pasien';
+
+    protected $primaryKey = 'no_reg_pasien';
+
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'no_reg_pasien', // Kolom di database
+        'no_reg_pasien',
         'nama_pasien',
         'umur',
         'no_ruangan',
@@ -22,5 +26,4 @@ class Patient extends Model
     {
         return $this->hasMany(InfusionSession::class, 'no_reg_pasien', 'no_reg_pasien');
     }
-
 }
