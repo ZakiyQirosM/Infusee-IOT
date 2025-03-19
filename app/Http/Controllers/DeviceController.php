@@ -10,7 +10,7 @@ class DeviceController extends Controller
 {
     public function index()
     {
-        $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee')->get();
+        $devices = Device::select('id_perangkat_infusee', 'alamat_id_infusee')->get();
 
         return view('devices.index', compact(
             'devices',

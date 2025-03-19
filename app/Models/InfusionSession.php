@@ -21,7 +21,6 @@ class InfusionSession extends Model
         'status_anomali_infus',
         'durasi_infus_menit',
         'timestamp_infus'	
-
     ];
 
     public function patient()

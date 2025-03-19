@@ -52,20 +52,26 @@ class RegisterController extends Controller
         $patient = Patient::where('no_reg_pasien', $data['no_reg_pasien'])->first();
 
         if ($patient) {
-            // ✅ Simpan data ke session
+            // ✅ Debug untuk memeriksa nilai yang diterima
+            \Log::info('Data yang diterima:', $data);
+
+            // ✅ Gunakan intval() untuk memastikan tipe integer
             session([
                 'no_reg_pasien' => $patient->no_reg_pasien,
                 'nama_pasien' => $patient->nama_pasien,
                 'umur' => $patient->umur,
                 'no_ruangan' => $patient->no_ruangan,
-                'durasi' => $data['durasi']
+                'durasi_infus_menit' => intval($data['durasi']),
             ]);
 
-            // ✅ Redirect ke halaman device
+            // ✅ Debug untuk memeriksa data yang disimpan di session
+            \Log::info('Session saat ini:', session()->all());
+
+            // ✅ Redirect ke halaman pemilihan device
             return redirect()->route('devices.index');
         }
 
-        // ✅ Jika data pasien tidak ditemukan
         return back()->withErrors(['error' => 'Pasien tidak ditemukan.']);
     }
+
 }

@@ -64,3 +64,26 @@
     </form>
 </div>
 @endsection
+
+<script>
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        fetch("{{ route('register.store') }}", {
+            method: 'POST',
+            body: new FormData(e.target),
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // ✅ Gunakan route Laravel sebagai path URL
+                window.location.href = "{{ route('devices.index') }}";
+            } else {
+                alert('Gagal menyimpan data');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>

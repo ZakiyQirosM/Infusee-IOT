@@ -31,6 +31,7 @@ body {
 }
 
 .sidebar h2 {
+    color:whitesmoke;
     font-size: 20px;
     margin: 0;
 }
@@ -352,4 +353,67 @@ canvas {
 
 .register-btn-submit:hover {
     background-color: #009688;
+}
+
+.device-container {
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.device-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.device-card {
+    background-color: #00c7b4;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #00c7b4;
+}
+
+.device-card:hover {
+    background-color: #14967F;
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.device-info h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: inherit;
+    text-align: center;
+}
+
+.device-info p {
+    font-size: 14px;
+    color: inherit;
+    text-align: center;
+}
+
+.no-device {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+    color: #999;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
 }

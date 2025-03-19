@@ -25,7 +25,6 @@ document.getElementById('btn-search').addEventListener('click', async () => {
 
             const data = await response.json();
 
-            // ✅ Isi otomatis dari database
             document.getElementById('nama_pasien').value = data.nama_pasien;
             document.getElementById('umur').value = data.umur;
             document.getElementById('no_ruangan').value = data.no_ruangan;
@@ -35,28 +34,4 @@ document.getElementById('btn-search').addEventListener('click', async () => {
         }
     }
 });
-
-
-document.getElementById('register-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    fetch("{{ route('register.store') }}", {
-        method: 'POST',
-        body: new FormData(e.target),
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // ✅ Gunakan route Laravel sebagai path URL
-            window.location.href = "{{ route('devices.index') }}";
-        } else {
-            alert('Gagal menyimpan data');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-
-
 
