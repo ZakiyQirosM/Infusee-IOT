@@ -7,6 +7,9 @@
     <h2>Pilih Device untuk Pasien</h2>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ca26df1 (regis sudah bisa konek ke device)
     {{-- Jika tidak ada device --}}
     @if ($devices->isEmpty())
         <p class="no-device">Tidak ada device aktif.</p>
@@ -22,6 +25,7 @@
         @endforeach
     </div>
     @endif
+<<<<<<< HEAD
 </div>
 @endsection
 
@@ -86,3 +90,40 @@
 </div>
 @endsection
 >>>>>>> d7510f2 (add file migration, model, dan controler, serta cari data pasien bisa)
+=======
+</div>
+@endsection
+
+<script>
+    function selectDevice(deviceId) {
+        console.log(`Device ${deviceId} selected`);
+
+        if (confirm(`Pilih device dengan ID: ${deviceId}?`)) {
+            fetch("{{ route('devices.assign') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    device_id: deviceId
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Device berhasil dipilih!");
+                    window.location.href = "{{ route('register.index') }}"; // ✅ Redirect ke halaman register
+                } else {
+                    return response.json().then(data => {
+                        alert(`Gagal memilih device: ${data.error || 'Terjadi kesalahan.'}`);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Terjadi kesalahan saat memilih device.");
+            });
+        }
+    }
+</script>
+>>>>>>> ca26df1 (regis sudah bisa konek ke device)
