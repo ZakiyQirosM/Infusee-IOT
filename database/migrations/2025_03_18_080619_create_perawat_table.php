@@ -16,6 +16,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('perawat');
+        Schema::dropIfExists('table_perawat');
     }
 };

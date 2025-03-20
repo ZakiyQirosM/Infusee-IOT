@@ -10,12 +10,12 @@ return new class extends Migration
     {
         Schema::create('table_perangkat_infusee', function (Blueprint $table) {
             $table->string('id_perangkat_infusee')->primary();
-            $table->string('alamat_id_infusee');
+            $table->string('alamat_ip_infusee');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::dropIfExists('table_perangkat_infusee');
     }
 };
