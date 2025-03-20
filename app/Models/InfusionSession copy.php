@@ -9,36 +9,34 @@ class InfusionSession extends Model
 {
     use HasFactory;
 
-    // ✅ Nama tabel di database
-    protected $table = 'infusion_sessions';
+    protected $table = 'table_dosis_infus_pasien'; 
 
-    protected $primaryKey = 'id_session';
-    
-    public $incrementing = true;
-
-    // ✅ Kolom yang bisa diisi (fillable)
     protected $fillable = [
         'no_reg_pasien',
-        'nama_pasien',
-        'umur',
-        'no_ruangan',
+        'no_pegawai',
         'id_perangkat_infusee',
+        'dosis_infus',
+        'laju_tetes_tpm',
+        'persentase_infus_menit',
+        'status_anomali_infus',
         'durasi_infus_menit',
-        'timestamp_infus',
+        'timestamp_infus'	
     ];
 
-    // ✅ Kolom yang dianggap sebagai tanggal (otomatis format timestamp)
-    protected $dates = ['timestamp_infus'];
-
-    // ✅ Relasi ke tabel `patients`
     public function patient()
     {
         return $this->belongsTo(Patient::class, 'no_reg_pasien', 'no_reg_pasien');
     }
 
-    // ✅ Relasi ke tabel `devices`
+    public function nurse()
+    {
+        return $this->belongsTo(Nurse::class, 'no_pegawai', 'no_pegawai');
+    }
+
     public function device()
     {
         return $this->belongsTo(Device::class, 'id_perangkat_infusee', 'id_perangkat_infusee');
     }
+
 }
+

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\InfusionSession;
-use App\Models\Device;
 
 class RegisterController extends Controller
 {
@@ -47,20 +46,22 @@ class RegisterController extends Controller
         if ($patient) {
             \Log::info('Data yang diterima:', $data);
 
-            session([
+            // ✅ Simpan langsung ke tabel `infusion_sessions`
+            $infusion = InfusionSession::create([
                 'no_reg_pasien' => $patient->no_reg_pasien,
                 'nama_pasien' => $patient->nama_pasien,
                 'umur' => $patient->umur,
                 'no_ruangan' => $patient->no_ruangan,
-                'durasi' => intval($data['durasi']),
+                'durasi_infus_menit' => intval($data['durasi']),
             ]);
 
-            \Log::info('Session saat ini:', session()->all());
+            \Log::info('Data InfusionSession:', $infusion->toArray());
 
-            return redirect()->route('devices.index');
+            // ✅ Redirect ke halaman pilih device
+            return redirect()->route('devices.index')->with('success', 'Data infus berhasil disimpan.');
         }
 
         return back()->withErrors(['error' => 'Pasien tidak ditemukan.']);
     }
-
 }
+

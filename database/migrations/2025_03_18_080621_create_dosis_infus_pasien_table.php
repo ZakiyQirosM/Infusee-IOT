@@ -21,7 +21,8 @@ return new class extends Migration
             $table->text('dosis_infus'); 
             $table->integer('laju_tetes_tpm'); 
             $table->integer('persentase_infus_menit'); 
-            $table->string('status_anomali_infus'); 
+            $table->string('status_anomali_infus');
+            $table->string('durasi_infus_menit');
 
             // ✅ Gunakan `timestamp()` untuk menyimpan waktu
             $table->timestamp('timestamp_infus')->nullable();

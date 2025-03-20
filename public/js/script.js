@@ -36,34 +36,37 @@ document.getElementById('btn-search').addEventListener('click', async () => {
     }
 });
 
-function selectDevice(deviceId) {
-    console.log(`Device ID yang dipilih: ${deviceId}`);
-
-    if (confirm(`Pilih device dengan ID: ${deviceId}?`)) {
-        fetch("{{ route('devices.assign') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                device_id: deviceId
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Terjadi kesalahan saat memilih device.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert(data.message);
-            // ✅ Redirect ke infusion_sessions setelah sukses
-            window.location.href = "{{ route('infusee.index') }}";
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert(`Gagal memilih device: ${error.message}`);
-        });
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('select-device')) {
+        const deviceId = event.target.dataset.deviceId;
+        console.log('Device clicked:', deviceId);
+        selectDevice(deviceId);
     }
+});
+
+function selectDevice(deviceId) {
+    fetch('/devices/assign', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            device_id: deviceId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json(); // ✅ Harus JSON, bukan HTML
+    })
+    .then(data => {
+        alert(data.message);
+        window.location.href = '/infusee';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan. Coba lagi nanti.');
+    });
 }
