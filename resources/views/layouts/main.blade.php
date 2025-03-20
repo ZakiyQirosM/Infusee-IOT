@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="assign-device-url" content="{{ route('devices.assign') }}">
     <meta name="register-store-url" content="{{ route('register.store') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - Infusee</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,7 +17,7 @@
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <h2 class="logo-title">Dashboard Monitoring</h2>
-        <button class="toggle-btn" onclick="toggleSidebar()" id="toggle-btn">✖</button>
+        <button class="toggle-btn" onclick="toggleSidebar()" id="toggle-btn">«</button>
     </div>
     <ul>
         <li class="{{ request()->routeIs('register.index') ? 'active' : '' }}">

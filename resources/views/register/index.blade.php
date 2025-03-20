@@ -89,27 +89,43 @@
 =======
 >>>>>>> ca26df1 (regis sudah bisa konek ke device)
 
+@push('scripts')
 <script>
-    document.getElementById('register-form').addEventListener('submit', (e) => {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('register-form');
 
-        fetch("{{ route('register.store') }}", {
-            method: 'POST',
-            body: new FormData(e.target),
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const durasiInput = document.getElementById('durasi');
+            const durasi = parseInt(durasiInput.value);
+
+            console.log('Durasi:', durasi);
+
+            if (isNaN(durasi) || durasi < 1) {
+                alert('Durasi tidak boleh kurang dari 1 menit!');
+                durasiInput.focus();
+                return;
             }
-        })
-        .then(response => {
-            if (response.ok) {
-                // ✅ Gunakan route Laravel sebagai path URL
-                window.location.href = "{{ route('devices.index') }}";
-            } else {
-                alert('Gagal menyimpan data');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+
+            fetch("{{ route('register.store') }}", {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "{{ route('devices.index') }}";
+                } else {
+                    alert('Gagal menyimpan data');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
     });
+<<<<<<< HEAD
 <<<<<<< HEAD
 </script>
 =======
@@ -117,3 +133,7 @@
 =======
 </script>
 >>>>>>> ca26df1 (regis sudah bisa konek ke device)
+=======
+</script>
+@endpush
+>>>>>>> a916abf (show data di list device  yang diinput di regis)
