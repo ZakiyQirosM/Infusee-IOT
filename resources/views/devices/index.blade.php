@@ -3,32 +3,58 @@
 @section('title', 'Device List')
 
 @section('content')
-<div class="container">
-    <h1 class="text-center my-4">Pilih Perangkat Aktif</h1>
+{{-- Jika tidak ada device --}}
+@if ($activeDevices && $activeDevices->isNotEmpty())
+    <div class="device-list">
+        @foreach ($activeDevices as $device)
+            <div class="device-card" data-device-id="{{ $device->id_perangkat_infusee }}">
+                <p>{{ $device->alamat_ip_infusee }}</p>
+            </div>
+        @endforeach
+    </div>
+@else
+    <p class="no-device">Tidak ada device aktif.</p>
+@endif
+@endsection
 
-    @if (count($activeDevices) > 0)
-        <div class="device-list">
-            @foreach ($activeDevices as $device)
-                <button class="device-btn" onclick="selectDevice('{{ $device['id'] }}', '{{ $device['ip'] }}')">
-                    {{ $device['id'] }} - {{ $device['ip'] }}
-                </button>
-            @endforeach
-        </div>
-    @else
-        <p class="text-center">Tidak ada perangkat aktif yang tersedia.</p>
-    @endif
-</div>
-
+{{-- JavaScript dipindah ke push scripts agar lebih rapi --}}
+@push('scripts')
 <script>
-    function selectDevice(id, ip) {
-        alert(`Perangkat ${id} dengan IP ${ip} dipilih`);
-        // Redirect ke halaman infusee berdasarkan ID perangkat
-        window.location.href = @json(route('infusee.index'));
-    }
-</script>
+function selectDevice(deviceId) {
+    console.log(`Device ${deviceId} selected`);
 
+    if (confirm(`Pilih device dengan ID: ${deviceId}?`)) {
+        fetch("{{ route('devices.assign') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                device_id: deviceId
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Device berhasil dipilih!");
+                window.location.href = "{{ route('register.index') }}"; // ✅ Redirect ke halaman register
+            } else {
+                return response.json().then(data => {
+                    alert(`Gagal memilih device: ${data.error || 'Terjadi kesalahan.'}`);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Terjadi kesalahan saat memilih device.");
+        });
+    }
+}
+</script>
+@endpush
 
 {{-- Styling --}}
+@push('styles')
 <style>
     .container {
         max-width: 800px;
@@ -43,6 +69,13 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
+    }
+
+    .device-card {
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f9f9f9;
     }
 
     .device-btn {
@@ -66,4 +99,4 @@
         margin-top: 20px;
     }
 </style>
-@endsection
+@endpush

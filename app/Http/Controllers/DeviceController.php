@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DosisInfusPasien;
+use App\Models\PerangkatInfusee;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -9,33 +11,12 @@ class DeviceController extends Controller
     // Menampilkan daftar perangkat aktif
     public function index()
     {
-        $devices = [
-            [
-                'id' => 'DIF001',
-                'status' => true,
-                'ip' => '192.168.1.101'
-            ],
-            [
-                'id' => 'DIF002',
-                'status' => false,
-                'ip' => '192.168.1.102'
-            ],
-            [
-                'id' => 'DIF003',
-                'status' => true,
-                'ip' => '192.168.1.103'
-            ],
-            [
-                'id' => 'DIF004',
-                'status' => false,
-                'ip' => '192.168.1.104'
-            ]
-        ];
+        // Ambil data perangkat termasuk field status
+        $devices = PerangkatInfusee::select('id_perangkat_infusee', 'alamat_ip_infusee')->get();
 
-        // Filter hanya device yang aktif
-        $activeDevices = array_filter($devices, function ($device) {
-            return $device['status'] === true;
-        });
+        $activeDevices = $devices ? $devices->filter(function ($device) {
+            return $device->status == 0;
+        }) : collect([]);
 
         return view('devices.index', compact('activeDevices'));
     }
@@ -50,9 +31,41 @@ class DeviceController extends Controller
             'durasi' => 'required|integer|min:0',
         ]);
 
-        // Lakukan sesuatu dengan data (misalnya simpan ke database atau proses lainnya)
+        // Simpan data ke database jika perlu
+        // Contoh:
+        // PerangkatInfusee::create($data);
 
         // Redirect ke halaman daftar perangkat aktif
-        return redirect()->route('device.index')->with('success', 'Alat berhasil dicari.');
+        return redirect()->route('devices.index')->with('success', 'Alat berhasil dicari.');
     }
+
+    public function assign(Request $request)
+    {
+        $data = $request->validate([
+            'device_id' => 'required|exists:table_perangkat_infusee,id_perangkat_infusee',
+        ]);
+
+    DosisInfusPasien::create([
+            'no_reg_pasien' => session('no_reg_pasien'),
+            'id_perangkat_infusee' => $data['device_id'],
+            'no_pegawai' => session('no_pegawai'),
+            'dosis_infus' => '100ml',
+            'laju_tetes_tpm' => 20,
+            'persentase_infus_menit' => 80,
+            'status_anomali_infus' => 'Normal',
+            'timestamp_infus' => now(),
+        ]);
+
+        session()->forget([
+            'no_reg_pasien',
+            'nama_pasien',
+            'umur',
+            'no_ruangan',
+            'durasi',
+        ]);
+
+        return redirect()->route('register.index')->with('success', 'Data infus berhasil disimpan!');
+    }
+
 }
+

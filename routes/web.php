@@ -23,3 +23,8 @@ Route::prefix('devices')->group(function () {
     Route::get('/', [DeviceController::class, 'index'])->name('devices.index');
     Route::post('/', [DeviceController::class, 'store'])->name('devices.store');
 });
+
+Route::post('/devices/assign', [DeviceController::class, 'assign'])->name('devices.assign');
+Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
+
+

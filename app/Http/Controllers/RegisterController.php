@@ -4,60 +4,60 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pasien;
-use App\Models\DosisInfusPasien;
+use App\Models\InfusionSession;
+use App\Models\Device;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
-    // Menampilkan form registrasi
     public function index()
     {
         return view('register.index');
     }
 
-    // Menangani pencarian pasien berdasarkan no_reg_pasien
-        public function search(Request $request)
-    {
-        $request->validate([
-            'no_reg_pasien' => 'required'
-        ]);
+    public function search(Request $request)
+{
+    $pasien = Pasien::table('pasien')
+                ->where('no_reg_pasien', $request->no_reg_pasien)
+                ->first();
 
-        // Ambil data pasien berdasarkan no_reg_pasien
-        $pasien = Pasien::where('no_reg_pasien', $request->no_reg_pasien)->first();
-
-        if (!$pasien) {
-            return redirect()->back()->withErrors(['No registrasi tidak ditemukan']);
-        }
-
-        return view('register.index', [
+    if ($pasien) {
+        return response()->json([
             'nama_pasien' => $pasien->nama_pasien,
             'umur' => $pasien->umur,
             'no_ruangan' => $pasien->no_ruangan
         ]);
+    } else {
+        return response()->json([]);
     }
+}
 
 
-    // Menangani pengiriman data dari form registrasi
     public function store(Request $request)
     {
-        try {
-            // Validasi input dari form
-            $data = $request->validate([
-                'no_reg_pasien' => 'required|string|exists:pasiens,no_reg_pasien',
-                'durasi' => 'required|integer|min:1',
+        $data = $request->validate([
+            'no_reg_pasien' => 'required|string|exists:pasien,no_reg_pasien',
+            'durasi' => 'required|integer|min:1',
+        ]);
+
+        $patient = Pasien::where('no_reg_pasien', $data['no_reg_pasien'])->first();
+
+        if ($patient) {
+            Log::info('Data yang diterima:', $data);
+
+            session([
+                'no_reg_pasien' => $patient->no_reg_pasien,
+                'nama_pasien' => $patient->nama_pasien,
+                'umur' => $patient->umur,
+                'no_ruangan' => $patient->no_ruangan,
+                'durasi' => (int) $data['durasi'],
             ]);
 
-            // Cari data pasien berdasarkan `no_reg_pasien`
-            $patient = Pasien::where('no_reg_pasien', $data['no_reg_pasien'])->firstOrFail();
+            Log::info('Session saat ini:', session()->all());
 
-            // Simpan ke tabel `DosisInfusPasien`
-            DosisInfusPasien::create([
-                'fk_no_reg_pasien' => $patient->no_reg_pasien,
-                'durasi_infus_menit' => $data['durasi'],
-            ]);
-
-            return redirect()->route('register.index')->with('success', 'Data infus berhasil disimpan.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return redirect()->route('devices.index');
         }
+
+        return back()->withErrors(['error' => 'Pasien tidak ditemukan.']);
     }
 }
