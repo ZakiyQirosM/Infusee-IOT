@@ -5,27 +5,29 @@ namespace App\Models {
     /**
      * App\Models\DosisInfusPasien
      *
-     * @property string $timestamp_infus
-     * @property mixed $durasi_infus_menit
-     * @property bool $status_anomali_infus
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property string|null $timestamp_infus
+     * @property string $status_anomali_infus
      * @property mixed $persentase_infus_menit
      * @property mixed $laju_tetes_tpm
      * @property string $dosis_infus
-     * @property string $fk_id_perangkat_infusee
-     * @property string $fk_no_pegawai
-     * @property string $fk_no_reg_pasien
+     * @property string $id_perangkat_infusee
+     * @property mixed $no_pegawai
+     * @property string $no_reg_pasien
      * @property-read \App\Models\Pasien $Pasien
      * @property-read \App\Models\PerangkatInfusee $PerangkatInfusee
      * @property-read \App\Models\Perawat $Perawat
-     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereFkNoRegPasien($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereFkNoPegawai($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereFkIdPerangkatInfusee($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereNoRegPasien($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereNoPegawai($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereIdPerangkatInfusee($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereDosisInfus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereLajuTetesTpm($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien wherePersentaseInfusMenit($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereStatusAnomaliInfus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereDurasiInfusMenit($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereTimestampInfus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<DosisInfusPasien>|DosisInfusPasien query()
@@ -282,10 +284,8 @@ namespace App\Models {
     /**
      * App\Models\Pasien
      *
-     * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property \Illuminate\Support\Carbon|null $created_at
      * @property string $no_ruangan
-     * @property string $umur
+     * @property mixed $umur
      * @property string $nama_pasien
      * @property string $no_reg_pasien
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DosisInfusPasien> $DosisInfusPasien
@@ -294,8 +294,6 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien whereNamaPasien($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien whereUmur($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien whereNoRuangan($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Pasien>|Pasien query()
@@ -552,16 +550,12 @@ namespace App\Models {
     /**
      * App\Models\PerangkatInfusee
      *
-     * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property \Illuminate\Support\Carbon|null $created_at
      * @property string $alamat_ip_infusee
      * @property string $id_perangkat_infusee
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DosisInfusPasien> $DosisInfusPasien
      * @property-read int|null $DosisInfusPasien_count
      * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee whereIdPerangkatInfusee($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee whereAlamatIpInfusee($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<PerangkatInfusee>|PerangkatInfusee query()
@@ -818,16 +812,12 @@ namespace App\Models {
     /**
      * App\Models\Perawat
      *
-     * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property \Illuminate\Support\Carbon|null $created_at
      * @property string $nama_perawat
-     * @property string $no_pegawai
+     * @property mixed $no_pegawai
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DosisInfusPasien> $DosisInfusPasien
      * @property-read int|null $DosisInfusPasien_count
      * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat whereNoPegawai($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat whereNamaPerawat($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Perawat>|Perawat query()
