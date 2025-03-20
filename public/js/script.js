@@ -1,4 +1,4 @@
-//F ungsi untuk menampilkan atau menyembunyikan sidebar
+// Fungsi untuk menampilkan atau menyembunyikan sidebar
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
@@ -7,7 +7,7 @@ function toggleSidebar() {
     sidebar.classList.toggle('show');
     content.classList.toggle('shift');
 
-    // Sembunyikan tombol ketika sidebar dibukav
+    // Sembunyikan tombol ketika sidebar dibuka
     if (sidebar.classList.contains('show')) {
         toggleButton.classList.add('hide');
     } else {
@@ -15,6 +15,7 @@ function toggleSidebar() {
     }
 }
 
+// ✅ Fungsi untuk mencari pasien berdasarkan no_register
 document.getElementById('btn-search').addEventListener('click', async () => {
     const noRegister = document.getElementById('no_reg_pasien').value.trim();
 
@@ -35,3 +36,34 @@ document.getElementById('btn-search').addEventListener('click', async () => {
     }
 });
 
+function selectDevice(deviceId) {
+    console.log(`Device ID yang dipilih: ${deviceId}`);
+
+    if (confirm(`Pilih device dengan ID: ${deviceId}?`)) {
+        fetch("{{ route('devices.assign') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                device_id: deviceId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Terjadi kesalahan saat memilih device.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            // ✅ Redirect ke infusion_sessions setelah sukses
+            window.location.href = "{{ route('infusee.index') }}";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`Gagal memilih device: ${error.message}`);
+        });
+    }
+}
