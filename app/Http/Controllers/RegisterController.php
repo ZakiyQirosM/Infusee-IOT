@@ -60,9 +60,6 @@ class RegisterController extends Controller
             // ✅ Gunakan intval() untuk memastikan tipe integer
             session([
                 'no_reg_pasien' => $patient->no_reg_pasien,
-                'nama_pasien' => $patient->nama_pasien,
-                'umur' => $patient->umur,
-                'no_ruangan' => $patient->no_ruangan,
                 'durasi_infus_menit' => intval($data['durasi']),
             ]);
 

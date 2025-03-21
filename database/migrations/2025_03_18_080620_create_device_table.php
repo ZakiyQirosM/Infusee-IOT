@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('table_perangkat_infusee', function (Blueprint $table) {
             $table->string('id_perangkat_infusee')->primary();
             $table->string('alamat_ip_infusee');
+            $table->string('status')->default('available');
         });
     }
 

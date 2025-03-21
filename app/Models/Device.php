@@ -11,9 +11,13 @@ class Device extends Model
 
     protected $table = 'table_perangkat_infusee';
 
+    protected $primaryKey = 'id_perangkat_infusee';
+    public $timestamps = false;
+
     protected $fillable = [
         'id_perangkat_infusee',
         'alamat_ip_infusee',
+        'status',
     ];
 
     public function infusionSessions()
