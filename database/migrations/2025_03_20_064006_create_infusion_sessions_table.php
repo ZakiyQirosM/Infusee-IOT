@@ -9,11 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('infusion_sessions', function (Blueprint $table) {
-            $table->id('id_session'); // Primary key auto increment
+            $table->unsignedBigInteger('id_session')->primary()->autoIncrement();
             $table->string('no_reg_pasien');
-            $table->string('nama_pasien');
-            $table->integer('umur');
-            $table->string('ruangan');
             $table->string('id_perangkat_infusee')->nullable(); // Nullable karena mungkin belum dipilih device
             $table->integer('durasi_infus_menit');
             $table->timestamp('timestamp_infus')->nullable();

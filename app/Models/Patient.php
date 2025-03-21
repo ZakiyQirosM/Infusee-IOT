@@ -26,4 +26,9 @@ class Patient extends Model
     {
         return $this->hasMany(InfusionSession::class, 'no_reg_pasien', 'no_reg_pasien');
     }
+
+    public function device()
+    {
+        return $this->hasMany(Device::class, 'no_reg_pasien', 'no_reg_pasien');
+    }
 }

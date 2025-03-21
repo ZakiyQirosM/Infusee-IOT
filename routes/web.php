@@ -17,3 +17,6 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
 Route::post('/devices/select', [DeviceController::class, 'select'])->name('devices.select');
 Route::post('/devices/assign', [DeviceController::class, 'assign'])->name('devices.assign');
+
+Route::get('/devices/status/{deviceId}', [DeviceController::class, 'status']);
+

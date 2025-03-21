@@ -78,7 +78,7 @@
 
             console.log('Durasi:', durasi);
 
-            if (isNaN(durasi) || durasi < 1) {
+            if (isNaN(durasi) || durasi <= 1) {
                 alert('Durasi tidak boleh kurang dari 1 menit!');
                 durasiInput.focus();
                 return;

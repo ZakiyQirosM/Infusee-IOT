@@ -9,19 +9,12 @@ class InfusionSession extends Model
 {
     use HasFactory;
 
-    // ✅ Nama tabel di database
     protected $table = 'infusion_sessions';
 
     protected $primaryKey = 'id_session';
-    
-    public $incrementing = true;
 
-    // ✅ Kolom yang bisa diisi (fillable)
     protected $fillable = [
         'no_reg_pasien',
-        'nama_pasien',
-        'umur',
-        'no_ruangan',
         'id_perangkat_infusee',
         'durasi_infus_menit',
         'timestamp_infus',

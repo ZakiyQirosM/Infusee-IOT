@@ -59,11 +59,47 @@ function selectDevice(deviceId) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json(); // ✅ Harus JSON, bukan HTML
+        return response.json();
     })
     .then(data => {
-        alert(data.message);
-        window.location.href = '/infusee';
+        if (data.success) {
+            // ✅ Hapus elemen dari DOM setelah sukses
+            document.querySelector(`[data-device-id="${data.device_id}"]`)?.remove();
+            document.querySelector('.patient-info')?.remove();
+
+            // ✅ Buat alert box sukses
+            const alertBox = document.createElement('div');
+            alertBox.style.position = 'fixed';
+            alertBox.style.top = '20px';
+            alertBox.style.left = '50%';
+            alertBox.style.transform = 'translateX(-50%)';
+            alertBox.style.backgroundColor = '#4CAF50';
+            alertBox.style.color = 'white';
+            alertBox.style.padding = '12px 20px';
+            alertBox.style.borderRadius = '8px';
+            alertBox.style.zIndex = '9999';
+            alertBox.style.display = 'flex';
+            alertBox.style.alignItems = 'center';
+            alertBox.style.gap = '10px';
+
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-circle-check status-icon';
+            icon.style.fontSize = '20px';
+            icon.style.color = 'white';
+
+            const message = document.createElement('span');
+            message.innerText = data.message;
+
+            alertBox.appendChild(icon);
+            alertBox.appendChild(message);
+
+            document.body.appendChild(alertBox);
+
+            setTimeout(() => {
+                alertBox.remove();
+                window.location.href = '/infusee'; // ✅ Redirect otomatis setelah alert hilang
+            }, 2000);
+        }
     })
     .catch(error => {
         console.error('Error:', error);

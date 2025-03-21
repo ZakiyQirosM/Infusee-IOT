@@ -49,9 +49,6 @@ class RegisterController extends Controller
             // ✅ Simpan langsung ke tabel `infusion_sessions`
             $infusion = InfusionSession::create([
                 'no_reg_pasien' => $patient->no_reg_pasien,
-                'nama_pasien' => $patient->nama_pasien,
-                'umur' => $patient->umur,
-                'no_ruangan' => $patient->no_ruangan,
                 'durasi_infus_menit' => intval($data['durasi']),
             ]);
 
