@@ -1,94 +1,151 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\InfusionSession;
+use App\Models\DosisInfus;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    public function index()
-{
-    // ✅ Cek apakah infusion session masih aktif
-    $infusionSession = session()->get('infusion_session');
-
-    if (!$infusionSession) {
-        $infusionSession = InfusionSession::with('device', 'patient')
-            ->whereNull('id_perangkat_infusee') // ✅ Hanya ambil jika belum diassign
-            ->orderBy('timestamp_infus', 'desc')
-            ->first();
+    public function getPatientData()
+    {
+        $infusionSession = session()->get('infusion_session');
 
         if ($infusionSession) {
-            session()->put('infusion_session', $infusionSession);
+            $patient = Patient::where('no_reg_pasien', $infusionSession['no_reg_pasien'])->first();
+            if ($patient) {
+                return [
+                    'no_reg_pasien' => $patient->no_reg_pasien,
+                    'nama_pasien' => $patient->nama_pasien,
+                    'umur' => $patient->umur,
+                    'no_ruangan' => $patient->no_ruangan,
+                    'durasi_infus_menit' => $infusionSession['durasi_infus_menit'],
+                ];
+            }
         }
+
+        return null;
     }
 
-    $patient = $infusionSession?->patient;
+    public function index()
+    {
+        $infusionSession = session()->get('infusion_session');
 
-    // ✅ Ambil id perangkat yang sudah dipakai
-    $usedDeviceIds = InfusionSession::whereNotNull('id_perangkat_infusee')
-        ->pluck('id_perangkat_infusee')
-        ->filter();
+        if (!$infusionSession) {
+            $infusionSession = InfusionSession::with('device', 'patient')
+                ->whereNull('id_perangkat_infusee')
+                ->orderBy('timestamp_infus', 'desc')
+                ->first();
 
-    // ✅ Ambil data device yang tersedia
-    $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee')
-        ->when($usedDeviceIds->count() > 0, function ($query) use ($usedDeviceIds) {
-            return $query->whereNotIn('id_perangkat_infusee', $usedDeviceIds);
-        })
-        ->get();
+            if ($infusionSession) {
+                $infusionSession->load('patient');
+                session()->put('infusion_session', $infusionSession);
+            }
+        }
 
-    // ✅ Kirim data ke view
-    return view('devices.index', compact('devices', 'infusionSession', 'patient'));
-}
+        // ✅ Ambil data pasien
+        $patientData = $this->getPatientData();
 
+        $usedDeviceIds = InfusionSession::whereNotNull('id_perangkat_infusee')
+            ->whereHas('device', function ($query) {
+                $query->where('status', 'unavailable');
+            })
+            ->pluck('id_perangkat_infusee')
+            ->filter();
 
+        $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee', 'status')
+            ->where('status', 'available')
+            ->when($usedDeviceIds->count() > 0, function ($query) use ($usedDeviceIds) {
+                return $query->whereNotIn('id_perangkat_infusee', $usedDeviceIds);
+            })
+            ->get();
+
+        return view('devices.index', compact('devices', 'infusionSession', 'patientData'));
+    }
 
     public function assign(Request $request)
-{
-    \Log::info('Data request:', $request->all());
-
-    $data = $request->validate([
-        'device_id' => 'required|string|exists:table_perangkat_infusee,id_perangkat_infusee',
-    ]);
-
-    // ✅ Ambil infusion session terakhir yang valid
-    $infusion = InfusionSession::whereNotNull('id_session')
-        ->orderBy('timestamp_infus', 'desc')
-        ->first();
-
-    if (!$infusion) {
-        \Log::error('Data infusion session tidak ditemukan');
-        return response()->json(['error' => 'Data infusion session tidak ditemukan.'], 400);
-    }
-
-    try {
-        $infusion->update([
-            'id_perangkat_infusee' => $data['device_id'],
-            'updated_at' => now(),
+    {
+        // ✅ Validasi request
+        $data = $request->validate([
+            'device_id' => 'required|string|exists:table_perangkat_infusee,id_perangkat_infusee',
         ]);
 
-        // ✅ Update status device ke 'unavailable'
-        $affectedRows = Device::where('id_perangkat_infusee', $data['device_id'])
-            ->update(['status' => 'unavailable']);
+        try {
+            // ✅ Ambil infusion session yang aktif
+            $infusion = InfusionSession::with('patient')
+                ->whereNotNull('id_session')
+                ->whereNull('id_perangkat_infusee')
+                ->orderBy('timestamp_infus', 'desc')
+                ->firstOrFail();
 
-        if ($affectedRows === 0) {
-            throw new \Exception('Device status gagal diupdate');
+            // ✅ Cek apakah perangkat tersedia
+            $device = Device::where('id_perangkat_infusee', $data['device_id'])
+                ->where('status', 'available')
+                ->first();
+
+            if (!$device) {
+                return response()->json([
+                    'error' => 'Perangkat tidak tersedia atau sudah digunakan.'
+                ], 400);
+            }
+
+            \DB::beginTransaction(); // ✅ Start Transaction
+
+            // ✅ Update di table infusion_sessions
+            $infusion->update([
+                'id_perangkat_infusee' => $data['device_id'],
+                'updated_at' => now(),
+            ]);
+
+            // ✅ Buat data dosis infus dengan nilai dosis awal
+            DosisInfus::create([
+                'id_session' => $infusion->id_session,
+                'id_perangkat_infusee' => $data['device_id'],
+                'dosis_infus' => 500, // ✅ Nilai default awal
+                'laju_tetes_tpm' => 33,
+                'persentase_infus_menit' => 50,
+                'status_anomali_infus' => 'normal',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // ✅ Update status perangkat menjadi 'unavailable'
+            $affectedRows = Device::where('id_perangkat_infusee', $data['device_id'])
+                ->update(['status' => 'unavailable']);
+
+            if ($affectedRows === 0) {
+                throw new \Exception('Gagal memperbarui status perangkat');
+            }
+
+            \DB::commit(); // ✅ Commit jika sukses
+
+            // ✅ Hapus session setelah perangkat berhasil dipilih
+            session()->forget('infusion_session');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Perangkat berhasil dipilih dan data disimpan!',
+                'device_id' => $data['device_id'],
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \DB::rollBack(); // ✅ Rollback jika gagal
+            \Log::error('Infusion session tidak ditemukan: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Data infusion session tidak ditemukan atau sudah memiliki perangkat.'
+            ], 400);
+        } catch (\Exception $e) {
+            \DB::rollBack(); // ✅ Rollback jika gagal
+            \Log::error('Gagal menyimpan infusion session: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Gagal menyimpan data infusion session.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
-
-        // ✅ Hapus session infusion setelah update
-        session()->forget('infusion_session');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Device berhasil dipilih dan data disimpan!',
-            'device_id' => $data['device_id'],
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Gagal menyimpan infusion session: ' . $e->getMessage());
-        return response()->json(['error' => 'Gagal menyimpan data infusion session.'], 500);
     }
-}
-
 
 }

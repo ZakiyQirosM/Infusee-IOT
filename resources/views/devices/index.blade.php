@@ -5,18 +5,53 @@
 @section('content')
 <div class="container">
     <div class="row">
-        {{-- ✅ Kolom kiri untuk data pasien --}}
+    {{-- ✅ Kolom kiri untuk data pasien --}}
         <div class="col-md-5">
             <div class="patient-info">
                 <h2>Data Pasien</h2>
-                @if (session('infusion_session') && $patient)
-                    <p><strong>No. Registrasi:</strong> {{ $infusionSession->no_reg_pasien }}</p>
-                    <p><strong>Nama:</strong> {{ $patient->nama_pasien }}</p>
-                    <p><strong>Umur:</strong> {{ $patient->umur }}</p>
-                    <p><strong>No. Ruangan:</strong> {{ $patient->no_ruangan }}</p>
-                    <p><strong>Durasi Infus:</strong> {{ $patient->durasi_infus_menit }} menit</p>
+                @if ($patientData)
+                <div class="form-group device">
+                    <label class="register-label">No. Registrasi</label>
+                    <div class="register-input-container device">
+                        <span>:</span>
+                        <span class="register-text device">{{ $patientData['no_reg_pasien'] }}</span>
+                    </div>
+                </div>
+
+                <div class="form-group device">
+                    <label class="register-label">Nama</label>
+                    <div class="register-input-container device">
+                        <span>:</span>
+                        <span class="register-text device">{{ $patientData['nama_pasien'] }}</span>
+                    </div>
+                </div>
+
+                <div class="form-group device">
+                    <label class="register-label">Umur</label>
+                    <div class="register-input-container device">
+                        <span>:</span>
+                        <span class="register-text device">{{ $patientData['umur'] }} Tahun</span>
+                    </div>
+                </div>
+
+                <div class="form-group device">
+                    <label class="register-label">No. Ruangan</label>
+                    <div class="register-input-container device">
+                        <span>:</span>
+                        <span class="register-text device">{{ $patientData['no_ruangan'] }}</span>
+                    </div>
+                </div>
+
+                <div class="form-group device">
+                    <label class="register-label">Durasi Infus</label>
+                    <div class="register-input-container device">
+                        <span>:</span>
+                        <span class="register-text device">{{ $patientData['durasi_infus_menit'] }} menit</span>
+                    </div>
+                </div>
+
                 @else
-                    <p class="alert alert-warning no-device">Tidak ada data pasien aktif.</p>
+                    <p class="alert alert-warning no-data">Tidak ada data pasien yang aktif.</p>
                 @endif
             </div>
         </div>
@@ -25,7 +60,7 @@
         <div class="col-md-7">
             <h2>Pilih Device untuk Pasien</h2>
             @if ($devices->isEmpty())
-                <p class="alert alert-warning no-device">Tidak ada device aktif.</p>
+                <p class="alert alert-warning no-data">Tidak ada device aktif.</p>
             @else
                 <div class="device-list">
                 @foreach ($devices as $device)
@@ -47,3 +82,4 @@
 {{-- ✅ CSRF Token untuk keperluan POST request --}}
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\InfusionSession;
+use Carbon\Carbon;
 
 class RegisterController extends Controller
 {
@@ -46,10 +47,11 @@ class RegisterController extends Controller
         if ($patient) {
             \Log::info('Data yang diterima:', $data);
 
-            // ✅ Simpan langsung ke tabel `infusion_sessions`
+            // ✅ Simpan langsung ke tabel `infusion_sessions
             $infusion = InfusionSession::create([
                 'no_reg_pasien' => $patient->no_reg_pasien,
                 'durasi_infus_menit' => intval($data['durasi']),
+                'timestamp_infus' => Carbon::now()->toDateTimeString(),
             ]);
 
             \Log::info('Data InfusionSession:', $infusion->toArray());
