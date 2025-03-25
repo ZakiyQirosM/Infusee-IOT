@@ -18,8 +18,8 @@ class InfuseeController extends Controller
             $patient = $session?->patient;
 
             // ✅ Atur timezone ke Asia/Jakarta
-            $remainingTime = $session->created_at 
-                ? $session->created_at->setTimezone('Asia/Jakarta')->format('c')
+            $remainingTime = $session->updated_at 
+                ? $session->updated_at->setTimezone('Asia/Jakarta')->format('c')
                 : null;
 
             return [
@@ -32,7 +32,7 @@ class InfuseeController extends Controller
                 'persentase_infus_menit' => $dosis->persentase_infus_menit ?? 0,
                 'status_anomali_infus' => $dosis->status_anomali_infus ?? '-',
                 'color' => $this->getColorBasedOnPercentage($dosis->persentase_infus_menit ?? 0),
-                'timestamp_infus' => $session->created_at?->setTimezone('Asia/Jakarta')->format('c'), // ✅ Format ISO8601 untuk JS
+                'timestamp_infus' => $session->updated_at?->setTimezone('Asia/Jakarta')->format('c'), // ✅ Format ISO8601 untuk JS
             ];
         });
 

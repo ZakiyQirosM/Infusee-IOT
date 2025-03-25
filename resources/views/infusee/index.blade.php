@@ -37,7 +37,7 @@
                     <p>No Kamar: {{ $infusee['no_ruangan'] }}</p>
                 </div>
                 <div class="right">
-                    <p>TPM: {{ $infusee['laju_tetes_tpm'] }}</p>
+                    <p>TPM: {{ $infusee['laju_tetes_tpm'] }}/33</p>
                 </div>
             </div>
 
@@ -53,6 +53,11 @@
                 data-start-time="{{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->format('Y-m-d\TH:i:sP') }}">
                     {{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->setTimezone('Asia/Jakarta')->format('H:i:s') }}
                 </p>
+            </div>
+
+            {{-- Alert (Hidden by default) --}}
+            <div id="alert-{{ $index }}" class="alert alert-persen" style="display: none;">
+                ⚠️ Infus hampir habis! Segera periksa!
             </div>
         </div>
         @endforeach
@@ -120,12 +125,22 @@
     }
 
     // ✅ Fungsi untuk update nilai chart tanpa API
-    function updateChart(index, value) {
-        if (chartInstances[index] && value !== undefined && value !== null) {
-            chartInstances[index].data.datasets[0].data = [value, 100 - value];
-            chartInstances[index].update();
+    // ✅ Fungsi untuk update nilai chart tanpa API
+function updateChart(index, value) {
+    if (chartInstances[index] && value !== undefined && value !== null) {
+        chartInstances[index].data.datasets[0].data = [value, 100 - value];
+        chartInstances[index].update();
+
+        // ✅ Tampilkan alert jika sisa ≤ 10%
+        const alertElement = document.getElementById(`alert-${index}`);
+        if (value <= 10) {
+            alertElement.style.display = 'block';
+        } else {
+            alertElement.style.display = 'none';
         }
     }
+}
+
 
     // ✅ Fungsi untuk menghitung waktu berjalan
 function calculateElapsedTime(startTimestamp) {

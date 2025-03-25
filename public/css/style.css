@@ -194,6 +194,7 @@ h2 {
     font-size: 14px;
     text-align: right;
     color: #666;
+    align-items: end;
 }
 
 .divider {
@@ -211,11 +212,17 @@ h2 {
 }
 
 
-.card-footer .left,
+.card-footer .left {
+    font-size: 14px;
+    color: #666;
+    margin-top: -8px;
+}
+
 .card-footer .right {
     font-size: 14px;
     color: #666;
     margin-top: -8px;
+    text-align: right;
 }
 
 .labtime {
@@ -449,4 +456,21 @@ canvas {
 .device .register-input-container span {
     color: #666666;
     font-size: 16px;
+}
+@keyframes pulse-alert {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.alert-persen {
+    font-size: 10px;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #dc3545; /* Merah */
+    border: 1px solid #dc3545;
+    animation: pulse-alert 1.5s infinite;
 }
