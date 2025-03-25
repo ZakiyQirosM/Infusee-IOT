@@ -17,7 +17,8 @@ class DosisInfus extends Model
         'laju_tetes_tpm',
         'persentase_infus_menit',
         'status_anomali_infus',
-        'timestamp_infus'	
+        'timestamp_infus',
+        'id_perangkat_infusee',
     ];
 
     public function infusionsession()
