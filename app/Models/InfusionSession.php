@@ -26,12 +26,18 @@ class InfusionSession extends Model
     // ✅ Relasi ke tabel `patients`
     public function patient()
     {
-        return $this->belongsTo(Patient::class, 'no_reg_pasien', 'no_reg_pasien');
+        return $this->hasOne(Patient::class, 'no_reg_pasien', 'no_reg_pasien');
     }
 
     // ✅ Relasi ke tabel `devices`
     public function device()
     {
-        return $this->belongsTo(Device::class, 'id_perangkat_infusee', 'id_perangkat_infusee');
+        return $this->hasMany(Device::class, 'id_perangkat_infusee', 'id_perangkat_infusee');
     }
+
+    public function dosisInfus()
+    {
+        return $this->hasOne(DosisInfus::class, 'id_session', 'id_session');
+    }
+
 }

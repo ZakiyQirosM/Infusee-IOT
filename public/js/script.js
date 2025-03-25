@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 // Fungsi untuk menampilkan atau menyembunyikan sidebar
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -64,7 +66,7 @@ function selectDevice(deviceId) {
     .then(data => {
         if (data.success) {
             // ✅ Hapus elemen dari DOM setelah sukses
-            document.querySelector(`[data-device-id="${data.device_id}"]`)?.remove();
+            document.querySelector(`[data-id="${data.device_id}"]`)?.remove();
             document.querySelector('.patient-info')?.remove();
 
             // ✅ Buat alert box sukses
@@ -97,7 +99,7 @@ function selectDevice(deviceId) {
 
             setTimeout(() => {
                 alertBox.remove();
-                window.location.href = '/infusee'; // ✅ Redirect otomatis setelah alert hilang
+                window.location.href = '/infusee';
             }, 2000);
         }
     })
