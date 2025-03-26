@@ -108,3 +108,24 @@ function selectDevice(deviceId) {
         alert('Terjadi kesalahan. Coba lagi nanti.');
     });
 }
+
+var currentFormId = null;
+
+function openConfirmPopup(formId) {
+    currentFormId = formId;
+    document.getElementById('confirm-overlay').classList.add('active');
+}
+
+function closeConfirmPopup() {
+    document.getElementById('confirm-overlay').classList.remove('active');
+    currentFormId = null;
+}
+
+document.getElementById('confirmYes').addEventListener('click', () => {
+    if (currentFormId) {
+        document.getElementById(currentFormId).submit();
+    }
+    closeConfirmPopup();
+});
+
+document.getElementById('confirmNo').addEventListener('click', closeConfirmPopup);

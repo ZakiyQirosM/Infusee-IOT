@@ -47,16 +47,25 @@ class RegisterController extends Controller
         if ($patient) {
             \Log::info('Data yang diterima:', $data);
 
-            // ✅ Simpan langsung ke tabel `infusion_sessions
+            $durasi = $data['durasi'];
+
+            //if (strpos($durasi, ':') !== false) {
+                // ✅ Jika format HH:MM
+            //    list($jam, $menit) = explode(':', $durasi);
+            //    $totalMenit = ($jam * 60) + $menit;
+            //} else {
+                // ✅ Jika format pecahan (misalnya 0.5 berarti 30 menit)
+            //    $totalMenit = floatval($durasi) * 60;
+            //}
+
             $infusion = InfusionSession::create([
                 'no_reg_pasien' => $patient->no_reg_pasien,
-                'durasi_infus_menit' => intval($data['durasi']),
+                'durasi_infus_menit' => intval($durasi),
                 'timestamp_infus' => Carbon::now()->toDateTimeString(),
             ]);
 
             \Log::info('Data InfusionSession:', $infusion->toArray());
 
-            // ✅ Redirect ke halaman pilih device
             return redirect()->route('devices.index')->with('success', 'Data infus berhasil disimpan.');
         }
 

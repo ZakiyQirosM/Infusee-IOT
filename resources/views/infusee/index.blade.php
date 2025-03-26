@@ -11,7 +11,14 @@
     @endif
 
     <h1 class="heading">Monitoring Infus Pasien</h1>
-    
+    {{-- Overlay Konfirmasi (Pindah ke luar card) --}}
+    <div id="confirm-overlay" class="confirm-overlay">
+        <div class="confirm-popup">
+            <h3>Yakin ingin mengakhiri sesi ini?</h3>
+            <button type="button" class="popup-btn confirm-btn" id="confirmYes">Ya, Akhiri</button>
+            <button type="button" class="popup-btn cancel-btn" id="confirmNo">Batal</button>
+        </div>
+    </div>
     <div class="grid">
     @foreach($infusees as $index => $infusee)
         <div class="card" id="card-{{ $index }}">
@@ -60,12 +67,13 @@
             </div>
 
             {{-- Tombol End Sesi --}}
-            <form id="end-session-{{ $index }}" action="{{ route('infusee.endSession', $infusee['id_session']) }}" method="POST" style="display: none; margin-top: 10px;">
-                @csrf
-                <button type="submit" class="end-session-btn" onclick="return confirm('Yakin ingin mengakhiri sesi ini?');">
-                    Akhiri Sesi
-                </button>
-            </form>
+            {{-- Tombol End Sesi --}}
+                <form id="end-session-{{ $index }}" action="{{ route('infusee.endSession', $infusee['id_session']) }}" method="POST" style="display: none; margin-top: 10px;">
+                    @csrf
+                    <button type="button" class="end-session-btn" onclick="openConfirmPopup('end-session-{{ $index }}')">
+                        Akhiri Sesi
+                    </button>
+                </form>
         </div>
         @endforeach
     </div>
@@ -196,6 +204,14 @@
             }
         }, 1000);
     }
+
+    document.getElementById('confirmYes').addEventListener('click', () => {
+        if (currentFormId) {
+            console.log(`Submitting form: ${currentFormId}`);
+            document.getElementById(currentFormId).submit();
+        }
+        closeConfirmPopup();
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
         @foreach ($infusees as $index => $infusee)
