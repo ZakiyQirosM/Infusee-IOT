@@ -68,7 +68,7 @@
                         data-id="{{ $device->id_perangkat_infusee }}" 
                         onclick="selectDevice('{{ $device->id_perangkat_infusee }}')">
                         <div class="device-info">
-                            <h3>ID: {{ $device->id_perangkat_infusee }}</h3>
+                            <h3>DIF: {{ $device->id_perangkat_infusee }}</h3>
                             <p>IP: {{ $device->alamat_ip_infusee }}</p>
                         </div>
                     </div>

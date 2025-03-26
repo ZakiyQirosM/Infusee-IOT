@@ -98,6 +98,7 @@ class DeviceController extends Controller
             $infusion->update([
                 'id_perangkat_infusee' => $data['device_id'],
                 'updated_at' => now(),
+                'status_sesi_infus' => 'active',
             ]);
 
             // ✅ Buat data dosis infus dengan nilai dosis awal

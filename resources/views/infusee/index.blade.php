@@ -13,9 +13,8 @@
     <h1 class="heading">Monitoring Infus Pasien</h1>
     
     <div class="grid">
-        @foreach($infusees as $index => $infusee)
-        <div class="card">
-            {{-- Header --}}
+    @foreach($infusees as $index => $infusee)
+        <div class="card" id="card-{{ $index }}">
             <div class="card-header">
                 <div class="left">
                     <h4>{{ $infusee['nama_pasien'] }}</h4>
@@ -28,7 +27,7 @@
                 </div>
             </div>
 
-            {{-- Line hijau tipis --}}
+            {{-- Divider --}}
             <div class="divider"></div>
 
             {{-- Footer --}}
@@ -41,16 +40,16 @@
                 </div>
             </div>
 
-            {{-- Chart di tengah --}}
+            {{-- Chart --}}
             <div class="chart-container">
                 <canvas id="chart-{{ $index }}" width="300" height="300"></canvas>
             </div>
 
             {{-- Timer --}}
             <div class="Timer">
-                <p class="labtime">Waktu Infus:</p>
+                <p class="labtime">Waktu Infus Berjalan:</p>
                 <p id="timer-{{ $index }}" class="timer" 
-                data-start-time="{{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->format('Y-m-d\TH:i:sP') }}">
+                   data-start-time="{{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->format('Y-m-d\TH:i:sP') }}">
                     {{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->setTimezone('Asia/Jakarta')->format('H:i:s') }}
                 </p>
             </div>
@@ -59,45 +58,57 @@
             <div id="alert-{{ $index }}" class="alert alert-persen" style="display: none;">
                 ⚠️ Infus hampir habis! Segera periksa!
             </div>
+
+            {{-- Tombol End Sesi --}}
+            <form id="end-session-{{ $index }}" action="{{ route('infusee.endSession', $infusee['id_session']) }}" method="POST" style="display: none; margin-top: 10px;">
+                @csrf
+                <button type="submit" class="end-session-btn" onclick="return confirm('Yakin ingin mengakhiri sesi ini?');">
+                    Akhiri Sesi
+                </button>
+            </form>
         </div>
         @endforeach
     </div>
 </div>
 
-{{-- Script Chart.js --}}
+{{-- Script Chart.js dan Timer --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // ✅ Plugin untuk menampilkan teks di tengah chart
     Chart.register({
         id: 'centerText',
         beforeDraw(chart) {
-            const { width } = chart;
-            const { height } = chart;
+            const { width, height } = chart;
             const ctx = chart.ctx;
-
+            
             ctx.restore();
             const fontSize = (height / 100).toFixed(2);
-            ctx.font = `${fontSize}em sans-serif`;
+            ctx.font = `bold ${fontSize}em sans-serif`;
             ctx.textBaseline = 'middle';
 
-            const text = `${chart.data.datasets[0].data[0].toFixed(1)}%`;
+            const value = chart.data.datasets[0].data[0];
+            const text = `${value.toFixed(0)}%`;
             const textX = Math.round((width - ctx.measureText(text).width) / 2);
             const textY = height / 2;
 
-            ctx.fillStyle = '#333';
+            ctx.fillStyle = getColorBasedOnPercentage(value);
             ctx.fillText(text, textX, textY);
             ctx.save();
         }
     });
 
-    let chartInstances = {}; // ✅ Simpan instance chart untuk tiap input
-    let timerInstances = {}; // ✅ Simpan instance timer untuk tiap input
+    function getColorBasedOnPercentage(value) {
+        if (value >= 80) return '#00cc44'; // Hijau
+        if (value >= 60) return '#ffcc00'; // Kuning
+        if (value >= 40) return '#ff9900'; // Oranye
+        if (value >= 11) return '#ff3333'; // Merah
+        return '#000000'; // Hitam
+    }
 
-    // ✅ Buat chart dengan nilai awal
+    let chartInstances = {};
+    let timerInstances = {};
+
     function createChart(index, value, color) {
         const ctx = document.getElementById(`chart-${index}`).getContext('2d');
-
-        // 🛑 Hapus chart lama jika sudah ada
         if (chartInstances[index]) {
             chartInstances[index].destroy();
         }
@@ -116,7 +127,6 @@
                 responsive: true,
                 cutout: '70%',
                 plugins: {
-                    tooltip: { enabled: true },
                     legend: { display: false },
                     centerText: true
                 }
@@ -124,74 +134,84 @@
         });
     }
 
-    // ✅ Fungsi untuk update nilai chart tanpa API
-    // ✅ Fungsi untuk update nilai chart tanpa API
-function updateChart(index, value) {
-    if (chartInstances[index] && value !== undefined && value !== null) {
-        chartInstances[index].data.datasets[0].data = [value, 100 - value];
-        chartInstances[index].update();
+    // Menghitung waktu berjalan; jika waktu sudah melebihi durasi, kembalikan null.
+    function calculateElapsedTime(startTimestamp, durationSeconds) {
+        const currentTime = new Date().getTime();
+        const elapsedTime = Math.floor((currentTime - startTimestamp) / 1000); 
 
-        // ✅ Tampilkan alert jika sisa ≤ 10%
-        const alertElement = document.getElementById(`alert-${index}`);
-        if (value <= 10) {
-            alertElement.style.display = 'block';
-        } else {
-            alertElement.style.display = 'none';
+        if (elapsedTime >= durationSeconds) {
+            return null;
+        }
+
+        const hours = Math.floor(elapsedTime / 3600);
+        const minutes = Math.floor((elapsedTime % 3600) / 60);
+        const seconds = elapsedTime % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Fungsi untuk update chart; tambahkan parameter sessionEnded
+    function updateChart(index, value, sessionEnded = false) {
+        if (chartInstances[index] && value !== undefined && value !== null) {
+            chartInstances[index].data.datasets[0].data = [value, 100 - value];
+            chartInstances[index].update();
+
+            // Alert jika nilai ≤ 10 dan sesi belum berakhir.
+            const alertElement = document.getElementById(`alert-${index}`);
+            if (!sessionEnded && value <= 10) {
+                alertElement.style.display = 'block';
+            } else {
+                alertElement.style.display = 'none';
+            }
         }
     }
-}
 
+    // Fungsi untuk memulai timer dan update chart
+    function startTimer(index, startTimestamp, initialValue, durationMinutes) {
+        const durationSeconds = durationMinutes * 60;
+        if (timerInstances[index]) {
+            clearInterval(timerInstances[index]);
+        }
 
-    // ✅ Fungsi untuk menghitung waktu berjalan
-function calculateElapsedTime(startTimestamp) {
-    const currentTime = new Date().getTime();
-    const elapsedTime = Math.floor((currentTime - startTimestamp) / 1000); // dalam detik
-    
-    const hours = Math.floor(elapsedTime / 3600);
-    const minutes = Math.floor((elapsedTime % 3600) / 60);
-    const seconds = elapsedTime % 60;
+        const timerEl = document.getElementById(`timer-${index}`);
+        const endSessionForm = document.getElementById(`end-session-${index}`);
+        const card = document.getElementById(`card-${index}`);
 
-    // ✅ Format waktu dengan leading zero
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
+        // Event untuk menampilkan tombol jika sesi sudah selesai
+        card.addEventListener('click', () => {
+            if (timerEl.innerText === 'Sesi Infus Selesai') {
+                endSessionForm.style.display = 'block';
+            }
+        });
 
-// ✅ Fungsi untuk memulai timer dan update chart
-function startTimer(index, startTimestamp, initialValue) {
-    // 🛑 Hentikan timer lama jika sudah ada
-    if (timerInstances[index]) {
-        clearInterval(timerInstances[index]);
+        // Jalankan interval untuk update setiap detik
+        timerInstances[index] = setInterval(() => {
+            let timerText = calculateElapsedTime(startTimestamp, durationSeconds);
+            if (timerText === null) {
+                timerEl.innerText = 'Sesi Infus Selesai';
+                updateChart(index, 0, true);
+                clearInterval(timerInstances[index]);
+            } else {
+                timerEl.innerText = timerText;
+                updateChart(index, initialValue, false);
+            }
+        }, 1000);
     }
 
-    // ✅ Tampilkan nilai awal langsung (tanpa menunggu interval pertama)
-    document.getElementById(`timer-${index}`).innerText = calculateElapsedTime(startTimestamp);
+    document.addEventListener('DOMContentLoaded', () => {
+        @foreach ($infusees as $index => $infusee)
+            (() => {
+                const index = {{ $index }};
+                const startTimestamp = new Date('{{ $infusee['timestamp_infus'] }}').getTime();
+                const initialValue = {{ $infusee['persentase_infus_menit'] }};
+                const color = '{{ $infusee['color'] }}';
+                const durationMinutes = {{ $infusee['durasi_infus_menit'] }};
 
-    // ✅ Jalankan `setInterval()` untuk update tiap 1 detik
-    timerInstances[index] = setInterval(() => {
-        // ✅ Update nilai timer tiap 1 detik
-        document.getElementById(`timer-${index}`).innerText = calculateElapsedTime(startTimestamp);
-
-        // ✅ Update chart langsung dari nilai awal
-        updateChart(index, initialValue);
-    }, 1000);
-}
-
-// ✅ Jalankan setelah DOM siap
-document.addEventListener('DOMContentLoaded', () => {
-    @foreach ($infusees as $index => $infusee)
-        (() => {
-            const index = {{ $index }};
-            const startTimestamp = new Date('{{ $infusee['timestamp_infus'] }}').getTime();
-            const initialValue = {{ $infusee['persentase_infus_menit'] }};
-            const color = '{{ $infusee['color'] }}';
-
-            // ✅ Buat chart dengan nilai awal
-            createChart(index, initialValue, color);
-
-            // ✅ Timer mulai dari timestamp awal
-            startTimer(index, startTimestamp, initialValue);
-        })();
-    @endforeach
-});
-
+                createChart(index, initialValue, color);
+                startTimer(index, startTimestamp, initialValue, durationMinutes);
+            })();
+        @endforeach
+    });
 </script>
 @endsection
+
+

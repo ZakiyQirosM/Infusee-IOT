@@ -15,6 +15,8 @@ return new class extends Migration
             $table->integer('durasi_infus_menit');
             $table->timestamp('timestamp_infus')->nullable();
             $table->timestamps();
+            $table->string('status_sesi_infus')->default('active');
+            
 
             // 🔗 Foreign Key ke table_pasien
             $table->foreign('no_reg_pasien')
