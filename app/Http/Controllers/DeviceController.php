@@ -106,7 +106,7 @@ class DeviceController extends Controller
                 'id_session' => $infusion->id_session,
                 'id_perangkat_infusee' => $data['device_id'],
                 'dosis_infus' => 500, // ✅ Nilai default awal
-                'laju_tetes_tpm' => 33,
+                'laju_tetes_tpm' => 50,
                 'persentase_infus_menit' => 50,
                 'status_anomali_infus' => 'normal',
                 'created_at' => now(),

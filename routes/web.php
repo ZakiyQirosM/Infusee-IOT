@@ -20,4 +20,7 @@ Route::post('/devices/select', [DeviceController::class, 'select'])->name('devic
 Route::post('/devices/assign', [DeviceController::class, 'assign'])->name('devices.assign');
 Route::get('/devices/status/{deviceId}', [DeviceController::class, 'status']);
 
+Route::get('/infusee/{infusee}', [InfuseeController::class, 'show']);
+
+
 

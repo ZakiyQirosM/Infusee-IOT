@@ -13,33 +13,54 @@ use Carbon\Carbon;
 class InfuseeController extends Controller
 {
     public function index()
-{
-    $dosisInfus = DosisInfus::whereHas('infusionsession', function ($query) {
-        $query->where('status_sesi_infus', 'active');
-    })->with(['infusionsession.patient'])->get();
+    {
+        $dosisInfus = DosisInfus::whereHas('infusionsession', function ($query) {
+            $query->where('status_sesi_infus', 'active');
+        })->with(['infusionsession.patient'])->get();
 
-    $infusees = $dosisInfus->map(function ($dosis) {
-        $session = $dosis->infusionsession;
-        $patient = $session?->patient;
+        $infusees = $dosisInfus->map(function ($dosis) {
+            $session = $dosis->infusionsession;
+            $patient = $session?->patient;
+        
+            // Hitung status berdasarkan laju_tetes_tpm
+            $tpm = $dosis->laju_tetes_tpm ?? 0;
+            $reference = 33;
+            if ($tpm < ($reference * 0.90)) {
+                $status = 'slow';
+                $bgColor = '#ff3333'; // Merah
+                $icon = 'fa fa-arrow-down'; // Panah ke bawah
+            } elseif ($tpm > ($reference * 1.10)) {
+                $status = 'fast';
+                $bgColor = '#ff3333'; // Merah
+                $icon = 'fa fa-arrow-up'; // Panah ke atas
+            } else {
+                $status = 'normal';
+                $bgColor = '#00cc44'; // Hijau
+                $icon = 'fa fa-arrow-up'; // Panah ke atas
+            }
+        
+            return [
+                'id_session' => $dosis->id_session ?? '-',
+                'nama_pasien' => $patient->nama_pasien ?? '-',
+                'no_ruangan' => $patient->no_ruangan ?? '-',
+                'id_perangkat_infusee' => $session->id_perangkat_infusee ?? '-',
+                'dosis_infus' => $dosis->dosis_infus ?? '-',
+                'laju_tetes_tpm' => $dosis->laju_tetes_tpm ?? '-',
+                'durasi_infus_menit' => $session->durasi_infus_menit ?? 0,
+                'persentase_infus_menit' => $dosis->persentase_infus_menit ?? 0,
+                'status_anomali_infus' => $dosis->status_anomali_infus ?? '-',
+                'status_sesi_infus' => $dosis->status_sesi_infus ?? '-',
+                'color' => $this->getColorBasedOnPercentage($dosis->persentase_infus_menit ?? 0),
+                'bgColor' => $bgColor, // ✅ Tambahkan background color sendiri
+                'icon' => $icon, // ✅ Tambahkan icon
+                'status' => $status,
+                'timestamp_infus' => $session->updated_at?->setTimezone('Asia/Jakarta')->format('c'),
+            ];
+        });
+                
 
-        return [
-            'id_session' => $dosis->id_session ?? '-',
-            'nama_pasien' => $patient->nama_pasien ?? '-',
-            'no_ruangan' => $patient->no_ruangan ?? '-',
-            'id_perangkat_infusee' => $session->id_perangkat_infusee ?? '-',
-            'dosis_infus' => $dosis->dosis_infus ?? '-',
-            'laju_tetes_tpm' => $dosis->laju_tetes_tpm ?? '-',
-            'durasi_infus_menit' => $session->durasi_infus_menit ?? 0,
-            'persentase_infus_menit' => $dosis->persentase_infus_menit ?? 0,
-            'status_anomali_infus' => $dosis->status_anomali_infus ?? '-',
-            'status_sesi_infus' => $dosis->status_sesi_infus ?? '-',
-            'color' => $this->getColorBasedOnPercentage($dosis->persentase_infus_menit ?? 0),
-            'timestamp_infus' => $session->updated_at?->setTimezone('Asia/Jakarta')->format('c'),
-        ];
-    });
-
-    return view('infusee.index', compact('infusees'));
-}
+        return view('infusee.index', compact('infusees'));
+    }
 
     private function getColorBasedOnPercentage($value)
     {

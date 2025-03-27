@@ -42,8 +42,19 @@
                 <div class="left">
                     <p>{{ Str::limit($infusee['nama_pasien'], 7) }}</p>
                 </div>
-                <div class="right">
-                    <p>TPM: {{ $infusee['laju_tetes_tpm'] }}/33</p>
+                <div style="
+                    display: flex; 
+                    align-items: center; 
+                    gap: 4px; 
+                    background-color: {{ $infusee['bgColor'] }}; 
+                    padding: 6px; 
+                    border-radius: 6px; 
+                    color: #ffffff;
+                ">
+                    <i class="{{ $infusee['icon'] }}" style="font-size: 10px;"></i>
+                    <p style="margin: 0; font-size: 11px; font-weight:bold">
+                        TPM: {{ $infusee['laju_tetes_tpm'] }}/33
+                    </p>
                 </div>
             </div>
 
@@ -227,6 +238,10 @@
             })();
         @endforeach
     });
+
+    setInterval(() => {
+        location.reload();
+    }, 60000);
 </script>
 @endsection
 
