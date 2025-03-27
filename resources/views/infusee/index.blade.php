@@ -24,7 +24,7 @@
         <div class="card" id="card-{{ $index }}">
             <div class="card-header">
                 <div class="left">
-                    <h4>{{ $infusee['nama_pasien'] }}</h4>
+                    <h4>No Kamar: {{ $infusee['no_ruangan'] }}</h4>
                 </div>
                 <div class="right">
                     <span>
@@ -40,7 +40,7 @@
             {{-- Footer --}}
             <div class="card-footer">
                 <div class="left">
-                    <p>No Kamar: {{ $infusee['no_ruangan'] }}</p>
+                    <p>{{ Str::limit($infusee['nama_pasien'], 7) }}</p>
                 </div>
                 <div class="right">
                     <p>TPM: {{ $infusee['laju_tetes_tpm'] }}/33</p>

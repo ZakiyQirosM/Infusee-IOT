@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Patient;
 use App\Models\DosisInfus;
 use App\Models\InfusionSession;
@@ -54,7 +55,7 @@ class InfuseeController extends Controller
         $session = InfusionSession::findOrFail($id_session);
         
         $session->update([
-            'status_sesi_infus' => 'inactive'
+            'status_sesi_infus' => 'ended'
         ]);
 
         $device = Device::where('id_perangkat_infusee', $session->id_perangkat_infusee)->first();

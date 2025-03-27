@@ -191,7 +191,7 @@ h2 {
 }
 
 .card-header .right {
-    font-size: 14px;
+    font-size: 11px;
     text-align: right;
     color: #666;
     align-items: end;
@@ -205,17 +205,18 @@ h2 {
 }
 
 .status-icon {
-    color: #00cc44; /* Warna hijau */
+    color: #00cc44;
     margin-left: 5px;
-    font-size: 16px;
+    font-size: 12px;
     vertical-align: middle;
 }
 
 
 .card-footer .left {
-    font-size: 14px;
+    font-size: 16px;
     color: #666;
     margin-top: -8px;
+    font-weight: bold;
 }
 
 .card-footer .right {
