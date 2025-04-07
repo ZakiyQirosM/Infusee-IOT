@@ -4,8 +4,7 @@ use App\Http\Controllers\InfuseeController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\RegisterController;
 
-Route::get('/', [RegisterController::class, 'index'])->name('register.index');
-
+Route::get('/', function () { return view('landingpage.index'); });
 Route::get('/infusee', [InfuseeController::class, 'index'])->name('infusee.index');
 Route::post('/infusee/end-session/{id_session}', [InfuseeController::class, 'endSession'])->name('infusee.endSession');
 
