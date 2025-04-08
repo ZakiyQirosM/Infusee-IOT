@@ -1,11 +1,24 @@
 body {
-    background-image: url('/assets/img/1.jpg'); /* tanpa 'public/' */
-    background-size: cover;
-    background-position: contain;
-    background-repeat: no-repeat;
-    height: 100vh;
     margin: 0;
+    height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/assets/img/2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scaleX(-1); /* hanya flip gambar, bukan konten */
+    z-index: -1; /* letakkan di belakang konten */
 }
 
 .back-button {
@@ -35,9 +48,9 @@ body {
     max-width: 400px;
     margin: 80px auto;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -46,7 +59,7 @@ body {
 
 .login-container h2 {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 55px;
     color: white;
 }
 
@@ -77,6 +90,8 @@ button {
     font-weight: bold;
     cursor: pointer;
     transition: background 0.3s ease, border 0.3s ease;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 input[type="text"],

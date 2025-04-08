@@ -69,7 +69,7 @@
                 <p class="labtime">Waktu Infus Berjalan:</p>
                 <p id="timer-{{ $index }}" class="timer" 
                    data-start-time="{{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->format('Y-m-d\TH:i:sP') }}">
-                    {{ \Carbon\Carbon::parse($infusee['timestamp_infus'])->setTimezone('Asia/Jakarta')->format('H:i:s') }}
+                   ⌛
                 </p>
             </div>
 
@@ -78,7 +78,6 @@
                 ⚠️ Infus hampir habis! Segera periksa!
             </div>
 
-            {{-- Tombol End Sesi --}}
             {{-- Tombol End Sesi --}}
                 <form id="end-session-{{ $index }}" action="{{ route('infusee.endSession', $infusee['id_session']) }}" method="POST" style="display: none; margin-top: 10px;">
                     @csrf
