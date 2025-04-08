@@ -6,7 +6,7 @@
 <div class="landing-container">
     <h1 class="landing-title">Welcome to INFUSEE</h1>
     <div class="landing-buttons">
-        <a href="{{ route('register.index') }}" class="glass-button">
+        <a href="{{ route('login') }}" class="glass-button">
             <div class="icon"><box-icon name='user' color="#ffffff"></box-icon></div>
             <div class="text-btn">Login</div>
         </a>

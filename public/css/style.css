@@ -91,6 +91,48 @@ h2 {
     transition: background-color 0.2s ease;
 }
 
+.logout-section {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.logout-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ff3333; /* merah terang */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+ box-icon:hover{
+    color: #ff1a1a;
+}
+
+.logout-icon {
+    fill: #ff3333; /* icon color merah terang */
+    transition: fill 0.3s ease;
+}
+
+.logout-text {
+    font-size: 16px;
+    color: #ff3333;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.logout-link:hover .logout-text {
+    color: #ff1a1a; /* warna merah lebih terang saat hover */
+}
+
+.logout-link:hover .logout-icon {
+    fill: #ff1a1a;
+}
+
 /* === CONTENT === */
 .content {
     flex: 1;
@@ -123,6 +165,21 @@ h2 {
 .toggle-btn-open.hide {
     opacity: 0;
     pointer-events: none;
+}
+
+.back-button {
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #818181;
+}
+.back-button:hover {
+    color: #333;
 }
 
 .infusee-container {

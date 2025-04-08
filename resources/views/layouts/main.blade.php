@@ -9,6 +9,7 @@
     <title>@yield('title') - Infusee</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
@@ -30,6 +31,12 @@
             <a href="{{ route('infusee.index') }}">Monitoring Infusee</a>
         </li>
     </ul>
+    <div class="logout-section">
+        <a href="{{ route('logout') }}" title="Logout" onclick="return confirm('Yakin logout?')" class="logout-link">
+            <box-icon name='log-out' color="#ff4d4d" size="md"></box-icon>
+            <p class="logout-text">Logout</p>
+        </a>
+    </div>
 </div>
 
 

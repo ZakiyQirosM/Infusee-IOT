@@ -1,0 +1,97 @@
+body {
+    background-image: url('/assets/img/1.jpg'); /* tanpa 'public/' */
+    background-size: cover;
+    background-position: contain;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.back-button {
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: white;
+}
+.back-button:hover {
+    color: rgb(208, 208, 208);
+}
+
+.content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height:100%;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: white;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #00C7B4;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+input[type="text"],
+input[type="password"],
+button {
+    box-sizing: border-box;
+}
+
+button:hover {
+    background: #00a595;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.error {
+    color: #ff9999;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}

@@ -14,6 +14,9 @@ class InfuseeController extends Controller
 {
     public function index()
     {
+        $infusees = InfusionSession::all();
+        $layout = auth('pegawai')->check() ? 'layouts.main' : 'layouts.guest';
+
         $dosisInfus = DosisInfus::whereHas('infusionsession', function ($query) {
             $query->where('status_sesi_infus', 'active');
         })->with(['infusionsession.patient'])->get();
@@ -58,8 +61,8 @@ class InfuseeController extends Controller
             ];
         });
                 
+        return view('infusee.index', compact('infusees', 'layout'));
 
-        return view('infusee.index', compact('infusees'));
     }
 
     private function getColorBasedOnPercentage($value)

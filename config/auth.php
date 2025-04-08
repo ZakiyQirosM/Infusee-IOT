@@ -40,6 +40,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // ✅ ini untuk login pegawai
+        'pegawai' => [
+            'driver' => 'session',
+            'provider' => 'pegawai',
+        ],
     ],
 
     /*
@@ -60,9 +66,9 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'pegawai' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\Pegawai::class,
         ],
 
         // 'users' => [

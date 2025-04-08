@@ -1,8 +1,9 @@
-@extends('layouts.main')
+@extends($layout)
 
 @section('title', 'Monitoring Infus Pasien')
 
 @section('content')
+
 <div class="container">
     @if (session('success'))
         <div class="alert alert-success">
