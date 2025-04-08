@@ -58,7 +58,7 @@
 
         {{-- ✅ Kolom kanan untuk list device --}}
         <div class="col-md-7">
-            <h2>Pilih Device untuk Pasien</h2>
+            <h2>Device Aktif</h2>
             @if ($devices->isEmpty())
                 <p class="alert alert-warning no-data">Tidak ada device aktif.</p>
             @else
