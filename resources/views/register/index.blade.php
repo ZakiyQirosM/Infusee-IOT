@@ -62,21 +62,36 @@
         {{-- Tombol Submit --}}
         <button type="submit" class="register-btn-submit">Simpan Data</button>
     </form>
+    @if($errors->any())
+    <div class="error-popup">
+        <div class="error-popup-content">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    </div>
+@endif
 </div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('register-form');
+        const popup = document.getElementById('errorPopup');
 
+        if (popup) {
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 2000);
+        }
+
+        // Script validasi form tetap jalan
+        const form = document.getElementById('register-form');
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             const durasiInput = document.getElementById('durasi');
             const durasi = parseInt(durasiInput.value);
-
-            console.log('Durasi:', durasi);
 
             if (isNaN(durasi) || durasi <= 1) {
                 alert('Durasi tidak boleh kurang dari 1 menit!');
