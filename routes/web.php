@@ -18,6 +18,7 @@ Route::middleware(['auth:pegawai'])->group(function () {
     Route::post('/devices/select', [DeviceController::class, 'select'])->name('devices.select');
     Route::post('/devices/assign', [DeviceController::class, 'assign'])->name('devices.assign');
     Route::get('/devices/status/{deviceId}', [DeviceController::class, 'status']);
+    Route::delete('/infusion-session/clear/{id_session}', [DeviceController::class, 'clear'])->name('infusion.clear');
 
     Route::post('/infusee/end-session/{id_session}', [InfuseeController::class, 'endSession'])->name('infusee.endSession');
     Route::get('/infusee/{infusee}', [InfuseeController::class, 'show']);

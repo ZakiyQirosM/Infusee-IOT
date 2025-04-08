@@ -32,6 +32,8 @@ class DeviceController extends Controller
 
     public function index()
     {
+        session()->forget('skip_autoload');
+
         $infusionSession = session()->get('infusion_session');
 
         if (!$infusionSession) {
@@ -105,7 +107,7 @@ class DeviceController extends Controller
             DosisInfus::create([
                 'id_session' => $infusion->id_session,
                 'id_perangkat_infusee' => $data['device_id'],
-                'dosis_infus' => 500, // ✅ Nilai default awal
+                'dosis_infus' => 500,
                 'laju_tetes_tpm' => 50,
                 'persentase_infus_menit' => 50,
                 'status_anomali_infus' => 'normal',
@@ -113,7 +115,7 @@ class DeviceController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // ✅ Update status perangkat menjadi 'unavailable'
+            // Update status perangkat menjadi 'unavailable'
             $affectedRows = Device::where('id_perangkat_infusee', $data['device_id'])
                 ->update(['status' => 'unavailable']);
 
@@ -121,9 +123,9 @@ class DeviceController extends Controller
                 throw new \Exception('Gagal memperbarui status perangkat');
             }
 
-            \DB::commit(); // ✅ Commit jika sukses
+            \DB::commit();
 
-            // ✅ Hapus session setelah perangkat berhasil dipilih
+            // Hapus session setelah perangkat berhasil dipilih
             session()->forget('infusion_session');
 
             return response()->json([
@@ -148,5 +150,24 @@ class DeviceController extends Controller
             ], 500);
         }
     }
+
+    public function clear($id_session)
+    {
+        $session = InfusionSession::where('id_session', $id_session)->first();
+
+        if (!$session) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan.');
+        }
+
+        $session->delete();
+
+        // ✅ Hapus session dengan key yang benar
+        if (session()->get('infusion_session.id_session') == $id_session) {
+            session()->forget('infusion_session');
+        }
+
+        return redirect()->route('devices.index')->with('success', 'Data pasien berhasil dihapus.');
+    }
+
 
 }
