@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\InfusionSession;
-use App\Models\DosisInfus;
+use App\Models\MonitoringInfus;
 use App\Models\Patient;
+use App\Http\Controllers\MonitoringController;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -103,18 +104,6 @@ class DeviceController extends Controller
                 'status_sesi_infus' => 'active',
             ]);
 
-            // ✅ Buat data dosis infus dengan nilai dosis awal
-            DosisInfus::create([
-                'id_session' => $infusion->id_session,
-                'id_perangkat_infusee' => $data['device_id'],
-                'dosis_infus' => 500,
-                'laju_tetes_tpm' => 50,
-                'persentase_infus_menit' => 50,
-                'status_anomali_infus' => 'normal',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
             // Update status perangkat menjadi 'unavailable'
             $affectedRows = Device::where('id_perangkat_infusee', $data['device_id'])
                 ->update(['status' => 'unavailable']);
@@ -125,6 +114,10 @@ class DeviceController extends Controller
 
             \DB::commit();
 
+            // ✅ Panggil MonitoringController
+            $monitoringController = new MonitoringController();
+            $monitoringResult = $monitoringController->storeInternal($infusion->id_session);
+
             // Hapus session setelah perangkat berhasil dipilih
             session()->forget('infusion_session');
 
@@ -133,6 +126,7 @@ class DeviceController extends Controller
                 'message' => 'Perangkat berhasil dipilih dan data disimpan!',
                 'device_id' => $data['device_id'],
             ]);
+            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             \DB::rollBack(); // ✅ Rollback jika gagal
             \Log::error('Infusion session tidak ditemukan: ' . $e->getMessage());
@@ -149,6 +143,7 @@ class DeviceController extends Controller
                 'details' => $e->getMessage(),
             ], 500);
         }
+        
     }
 
     public function clear($id_session)

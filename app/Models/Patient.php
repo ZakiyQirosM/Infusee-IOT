@@ -31,4 +31,7 @@ class Patient extends Model
     {
         return $this->hasMany(Device::class, 'no_reg_pasien', 'no_reg_pasien');
     }
+
+    public $timestamps = false;
+
 }

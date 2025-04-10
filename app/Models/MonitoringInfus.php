@@ -5,21 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DosisInfus extends Model
+class MonitoringInfus extends Model
 {
     use HasFactory;
 
-    protected $table = 'table_dosis_infus_pasien'; 
+    protected $table = 'table_monitoring_infus'; // Sesuai nama tabel di migration
+
+    public $timestamps = false; // Karena pakai kolom waktu sendiri (bukan created_at & updated_at) 
 
     protected $fillable = [
         'id_session',
-        'dosis_infus',
-        'laju_tetes_tpm',
-        'persentase_infus_menit',
-        'status_anomali_infus',
-        'timestamp_infus',
-        'id_perangkat_infusee',
+        'berat_total',
+        'berat_sekarang',
+        'tpm_sensor',
+        'tpm_prediksi',
+        'waktu',
     ];
+    
 
     public function infusionsession()
     {

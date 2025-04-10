@@ -50,7 +50,7 @@ class RegisterController extends Controller
     
             if ($infusBelumSelesai) {
                 return redirect()->back()
-                    ->withErrors(['Terdapat pasien lain yang belum selesai (belum dipilihkan device). Silakan selesaikan atau hapus terlebih dahulu.']);
+                    ->withErrors(['Terdapat registrasi yang belum selesai (belum dipilihkan device). Silakan selesaikan atau hapus terlebih dahulu di Device Aktif.']);
             }
     
             // 🚀 Jika aman, simpan

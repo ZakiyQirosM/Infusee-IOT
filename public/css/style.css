@@ -458,6 +458,13 @@ canvas {
     background-color: #009688;
 }
 
+.sidebar svg {
+    position: relative;
+    top: 3px; /* sesuaikan nilai ini sesuai kebutuhan */
+    margin-right: 8px;
+}
+
+
 .device-container {
     max-width: 600px;
     margin: 20px auto;

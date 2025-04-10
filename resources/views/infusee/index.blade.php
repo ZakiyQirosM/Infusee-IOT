@@ -54,7 +54,7 @@
                 ">
                     <i class="{{ $infusee['icon'] }}" style="font-size: 10px;"></i>
                     <p style="margin: 0; font-size: 11px; font-weight:bold">
-                        TPM: {{ $infusee['laju_tetes_tpm'] }}/33
+                        TPM: {{ $infusee['tpm_sensor'] }}/ {{ $infusee['tpm_prediksi']}}
                     </p>
                 </div>
             </div>
@@ -229,7 +229,7 @@
             (() => {
                 const index = {{ $index }};
                 const startTimestamp = new Date('{{ $infusee['timestamp_infus'] }}').getTime();
-                const initialValue = {{ $infusee['persentase_infus_menit'] }};
+                const initialValue = {{ $infusee['persentase_infus'] }};
                 const color = '{{ $infusee['color'] }}';
                 const durationMinutes = {{ $infusee['durasi_infus_menit'] }};
 
@@ -240,11 +240,14 @@
     });
 
     setInterval(() => {
-        fetch('/api/get-latest-infus')
-            .then(res => res.json())
-            .then(data => {
-            });
-    }, 60000);
+    fetch('/get-latest-infus')
+        .then(res => res.json())
+        .then(data => {
+            const value = item.persentase;
+            const color = getColorBasedOnPercentage(value);
+            updateChart(index, value);
+        });
+}, 60000);
 
 </script>
 @endsection

@@ -33,8 +33,8 @@ class InfusionSession extends Model
         return $this->hasMany(Device::class, 'id_perangkat_infusee', 'id_perangkat_infusee');
     }
 
-    public function dosisInfus()
+    public function MonitoringInfus()
     {
-        return $this->hasOne(DosisInfus::class, 'id_session', 'id_session');
+        return $this->hasOne(MonitoringInfus::class, 'id_session', 'id_session');
     }
 }
