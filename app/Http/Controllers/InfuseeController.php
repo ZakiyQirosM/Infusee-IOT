@@ -42,7 +42,7 @@ class InfuseeController extends Controller
             $status = 'slow';
             $bgColor = '#ff3333';
             $icon = 'fa fa-arrow-down';
-        } elseif ($tpm > ($reference * 1.30)) {
+        } elseif ($tpm > ($reference * 1.20)) {
             $status = 'fast';
             $bgColor = '#ff3333';
             $icon = 'fa fa-arrow-up';
@@ -59,11 +59,11 @@ class InfuseeController extends Controller
             'id_perangkat_infusee' => $session->id_perangkat_infusee ?? '-',
             'berat_total' => $berat_sekarang,
             'tpm_sensor' => $dinfus->tpm_sensor ?? '-',
-            'durasi_infus_menit' => $session->durasi_infus_menit ?? 0,
+            'durasi_infus_jam' => $session->durasi_infus_jam ?? 0,
             'tpm_prediksi' => $dinfus->tpm_prediksi ?? 0,
             'persentase_infus' => $persentase,
             'status_sesi_infus' => $dinfus->status_sesi_infus ?? '-',
-            'color' => $this->getColorBasedOnPercentage($dinfus->tpm_prediksi ?? 0),
+            'color' => $this->getColorBasedOnPercentage($persentase ?? 0),
             'bgColor' => $bgColor,
             'icon' => $icon,
             'status' => $status,

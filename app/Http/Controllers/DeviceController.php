@@ -23,7 +23,7 @@ class DeviceController extends Controller
                     'nama_pasien' => $patient->nama_pasien,
                     'umur' => $patient->umur,
                     'no_ruangan' => $patient->no_ruangan,
-                    'durasi_infus_menit' => $infusionSession['durasi_infus_menit'],
+                    'durasi_infus_jam' => $infusionSession['durasi_infus_jam'],
                 ];
             }
         }

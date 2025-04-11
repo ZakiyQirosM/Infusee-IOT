@@ -16,7 +16,7 @@ class InfusionSession extends Model
     protected $fillable = [
         'no_reg_pasien',
         'id_perangkat_infusee',
-        'durasi_infus_menit',
+        'durasi_infus_jam',
         'timestamp_infus',
         'status_sesi_infus',
     ];

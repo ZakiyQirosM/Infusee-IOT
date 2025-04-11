@@ -46,7 +46,7 @@
                     <label class="register-label">Durasi Infus</label>
                     <div class="register-input-container device">
                         <span>:</span>
-                        <span class="register-text device">{{ $patientData['durasi_infus_menit'] }} menit</span>
+                        <span class="register-text device">{{ $patientData['durasi_infus_jam'] }} jam</span>
                     </div>
                 </div>
 

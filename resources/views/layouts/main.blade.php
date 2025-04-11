@@ -13,7 +13,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-
+@if($errors->any())
+<div class="error-popup" id="errorPopup">
+    <div class="error-popup-content">
+        @foreach($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+</div>
+@endif
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="logo">

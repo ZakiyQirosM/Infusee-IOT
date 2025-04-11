@@ -186,7 +186,7 @@
 
     // Fungsi untuk memulai timer dan update chart
     function startTimer(index, startTimestamp, initialValue, durationMinutes) {
-        const durationSeconds = durationMinutes * 60;
+        const durationSeconds = durationMinutes * 3600;
         if (timerInstances[index]) {
             clearInterval(timerInstances[index]);
         }
@@ -225,19 +225,38 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+        
+        if (confirmYes && confirmNo) {
+            confirmYes.addEventListener('click', () => {
+                if (currentFormId) {
+                    console.log(`Submitting form: ${currentFormId}`);
+                    document.getElementById(currentFormId).submit();
+                }
+                closeConfirmPopup();
+            });
+
+            confirmNo.addEventListener('click', () => {
+                closeConfirmPopup();
+            });
+        } else {
+            console.error('Element confirmYes atau confirmNo tidak ditemukan!');
+        }
+
         @foreach ($infusees as $index => $infusee)
             (() => {
                 const index = {{ $index }};
                 const startTimestamp = new Date('{{ $infusee['timestamp_infus'] }}').getTime();
                 const initialValue = {{ $infusee['persentase_infus'] }};
                 const color = '{{ $infusee['color'] }}';
-                const durationMinutes = {{ $infusee['durasi_infus_menit'] }};
-
+                const durationMinutes = {{ $infusee['durasi_infus_jam'] }};
                 createChart(index, initialValue, color);
                 startTimer(index, startTimestamp, initialValue, durationMinutes);
             })();
         @endforeach
     });
+
 
     setInterval(() => {
     fetch('/get-latest-infus')

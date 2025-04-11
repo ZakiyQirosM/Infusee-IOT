@@ -5,6 +5,9 @@
 @section('content')
 
 <div class='register-container'>
+
+
+
     <form id="register-form" action="{{ route('register.store') }}" method="POST">
         @csrf
         <h2 class="register-title">
@@ -52,7 +55,7 @@
 
         {{-- Durasi --}}
         <div class="form-group">
-            <label class="register-label">Durasi (menit)</label>
+            <label class="register-label">Durasi (jam)</label>
             <div class="register-input-container">
                 <span>:</span>
                 <input type="number" id="durasi" name="durasi" class="register-input" value="0" required>
@@ -62,30 +65,13 @@
         {{-- Tombol Submit --}}
         <button type="submit" class="register-btn-submit">Simpan Data</button>
     </form>
-    @if($errors->any())
-    <div class="error-popup">
-        <div class="error-popup-content">
-            @foreach($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    </div>
-@endif
 </div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const popup = document.getElementById('errorPopup');
-
-        if (popup) {
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 2000);
-        }
-
-        // Script validasi form tetap jalan
+        // ✅ Validasi form
         const form = document.getElementById('register-form');
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -94,7 +80,7 @@
             const durasi = parseInt(durasiInput.value);
 
             if (isNaN(durasi) || durasi <= 1) {
-                alert('Durasi tidak boleh kurang dari 1 menit!');
+                showAlert('Durasi tidak boleh kurang dari 1 menit!');
                 durasiInput.focus();
                 return;
             }
@@ -108,12 +94,18 @@
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = "{{ route('devices.index') }}";
+                    showAlert('Data berhasil disimpan!', 'success');
+                    setTimeout(() => {
+                        window.location.href = "{{ route('devices.index') }}";
+                    }, 1500);
                 } else {
-                    alert('Gagal menyimpan data');
+                    showAlert('Gagal menyimpan data!');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Terjadi kesalahan server!');
+            });
         });
     });
 </script>

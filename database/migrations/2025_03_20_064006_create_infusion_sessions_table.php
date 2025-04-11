@@ -12,7 +12,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_session')->primary()->autoIncrement();
             $table->string('no_reg_pasien');
             $table->string('id_perangkat_infusee')->nullable(); // Nullable karena mungkin belum dipilih device
-            $table->integer('durasi_infus_menit');
+            $table->integer('durasi_infus_jam');
             $table->timestamp('timestamp_infus')->nullable();
             $table->timestamps();
             $table->string('status_sesi_infus')->default('active');
