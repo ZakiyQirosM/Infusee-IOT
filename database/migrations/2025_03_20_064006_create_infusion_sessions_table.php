@@ -30,7 +30,7 @@ return new class extends Migration
                 ->references('id_perangkat_infusee')
                 ->on('table_perangkat_infusee')
                 ->onUpdate('cascade')
-                ->onDelete('set null');
+                ->onDelete('cascade');
         });
     }
 

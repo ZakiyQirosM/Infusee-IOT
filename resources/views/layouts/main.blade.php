@@ -6,7 +6,7 @@
     <meta name="assign-device-url" content="{{ route('devices.assign') }}">
     <meta name="register-store-url" content="{{ route('register.store') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - Infusee</title>
+    <title>@yield('title')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>

@@ -11,7 +11,7 @@ class MonitoringController extends Controller
 {
     public function storeInternal($id_session, $berat_total = null, $tpm_sensor = null)
     {
-        // Validasi session dulu
+        // Validasi session
         $session = InfusionSession::where('id_session', $id_session)->first();
         if (!$session) {
             Log::error('MonitoringController: ID session tidak ditemukan.', ['id_session' => $id_session]);
@@ -26,7 +26,7 @@ class MonitoringController extends Controller
             $existing = MonitoringInfus::where('id_session', $id_session)->first();
 
             if (!$existing) {
-                // Pertama kali alat aktif → simpan berat_total dan berat_sekarang sama
+                // Pertama kali alat aktif
                 MonitoringInfus::create([
                     'id_session' => $id_session,
                     'berat_total' => $berat_total,
@@ -36,7 +36,7 @@ class MonitoringController extends Controller
                     'waktu' => now(),
                 ]);
             } else {
-                // Update berat sekarang → diasumsikan dari sensor berat baru (berat_total)
+                // Update berat sekarang
                 $existing->update([
                     'berat_sekarang' => $berat_total,
                     'tpm_sensor' => $tpm_sensor,

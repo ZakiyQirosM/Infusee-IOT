@@ -41,7 +41,7 @@
             {{-- Footer --}}
             <div class="card-footer">
                 <div class="left">
-                    <p>{{ Str::limit($infusee['nama_pasien'], 7) }}</p>
+                    <p>{{ Str::limit($infusee['nama_pasien'], 5) }}</p>
                 </div>
                 <div style="
                     display: flex; 
@@ -195,14 +195,22 @@
         const endSessionForm = document.getElementById(`end-session-${index}`);
         const card = document.getElementById(`card-${index}`);
 
-        // Event untuk menampilkan tombol jika sesi sudah selesai
-        card.addEventListener('click', () => {
+        // Tampilkan tombol jika sesi selesai dan card diklik
+        card.addEventListener('click', (e) => {
             if (timerEl.innerText === 'Sesi Infus Selesai') {
                 endSessionForm.style.display = 'block';
+                e.stopPropagation(); // Cegah langsung ke event global
             }
         });
 
-        // Jalankan interval untuk update setiap detik
+        // Sembunyikan tombol jika klik di luar card dan tombol
+        document.addEventListener('click', function (e) {
+            if (!card.contains(e.target) && !endSessionForm.contains(e.target)) {
+                endSessionForm.style.display = 'none';
+            }
+        });
+
+        // Jalankan timer
         timerInstances[index] = setInterval(() => {
             let timerText = calculateElapsedTime(startTimestamp, durationSeconds);
             if (timerText === null) {
