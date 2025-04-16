@@ -11,7 +11,9 @@ return new class extends Migration
         Schema::create('table_perangkat_infusee', function (Blueprint $table) {
             $table->string('id_perangkat_infusee')->primary();
             $table->string('alamat_ip_infusee');
-            $table->string('status')->default('available');
+            $table->enum('status', ['available', 'unavailable'])->default('unavailable');
+            $table->timestamp('last_ping')->nullable();
+            $table->enum('status_device', ['online', 'offline'])->default('online');
         });
     }
 

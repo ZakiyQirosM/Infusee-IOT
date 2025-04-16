@@ -8,9 +8,65 @@ use App\Models\MonitoringInfus;
 use App\Models\Patient;
 use App\Http\Controllers\MonitoringController;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 class DeviceController extends Controller
 {
+    public function ping(Request $request)
+    {
+        $request->validate([
+            'id_perangkat_infusee' => 'required|string',
+            'alamat_ip_infusee' => 'required|ip',
+        ]);
+
+        $device = Device::updateOrCreate(
+            ['id_perangkat_infusee' => $request->id_perangkat_infusee],
+            [
+                'alamat_ip_infusee' => $request->alamat_ip_infusee,
+                'status' => 'available',
+                'last_ping' => now(),
+                'status_device' => 'online',
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Device ping recorded.',
+            'device' => $device
+        ]);
+    }
+
+    public function shutdown(Request $request)
+    {
+        try {
+            // Ambil id_perangkat_infusee dari request
+            $deviceId = $request->input('id_perangkat_infusee');
+            
+            // Periksa apakah id_perangkat_infusee ada di request
+            if (!$deviceId) {
+                return response()->json(['message' => 'id_perangkat_infusee required'], 400);
+            }
+
+            // Cari perangkat berdasarkan id_perangkat_infusee
+            $device = device::where('id_perangkat_infusee', $deviceId)->first();
+            
+            // Periksa apakah perangkat ditemukan
+            if (!$device) {
+                return response()->json(['message' => 'Device not found'], 404);
+            }
+
+            // Update status perangkat menjadi 'offline'
+            $device->status_device = 'offline';
+            $device->save();
+
+            return response()->json(['message' => 'Device status updated to offline'], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal server error'], 500);
+        }
+    }
+
     public function getPatientData()
     {
         $infusionSession = session()->get('infusion_session');
@@ -59,12 +115,14 @@ class DeviceController extends Controller
             ->pluck('id_perangkat_infusee')
             ->filter();
 
-        $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee', 'status')
+        $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee', 'status', 'status_device')
             ->where('status', 'available')
+            ->where('status_device', 'online') // ✅ Tambahan kondisi ini
             ->when($usedDeviceIds->count() > 0, function ($query) use ($usedDeviceIds) {
                 return $query->whereNotIn('id_perangkat_infusee', $usedDeviceIds);
             })
             ->get();
+
 
         return view('devices.index', compact('devices', 'infusionSession', 'patientData'));
     }
@@ -73,7 +131,7 @@ class DeviceController extends Controller
     {
         // ✅ Validasi request
         $data = $request->validate([
-            'device_id' => 'required|string|exists:table_perangkat_infusee,id_perangkat_infusee',
+            'id_perangkat_infusee' => 'required|string|exists:table_perangkat_infusee,id_perangkat_infusee',
         ]);
 
         try {
@@ -85,7 +143,7 @@ class DeviceController extends Controller
                 ->firstOrFail();
 
             // ✅ Cek apakah perangkat tersedia
-            $device = Device::where('id_perangkat_infusee', $data['device_id'])
+            $device = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->where('status', 'available')
                 ->first();
 
@@ -99,13 +157,13 @@ class DeviceController extends Controller
 
             // ✅ Update di table infusion_sessions
             $infusion->update([
-                'id_perangkat_infusee' => $data['device_id'],
+                'id_perangkat_infusee' => $data['id_perangkat_infusee'],
                 'updated_at' => now(),
                 'status_sesi_infus' => 'active',
             ]);
 
             // Update status perangkat menjadi 'unavailable'
-            $affectedRows = Device::where('id_perangkat_infusee', $data['device_id'])
+            $affectedRows = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->update(['status' => 'unavailable']);
 
             if ($affectedRows === 0) {
@@ -124,7 +182,7 @@ class DeviceController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Perangkat berhasil dipilih dan data disimpan!',
-                'device_id' => $data['device_id'],
+                'id_perangkat_infusee' => $data['id_perangkat_infusee'],
             ]);
             
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

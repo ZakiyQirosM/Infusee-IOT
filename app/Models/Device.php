@@ -18,8 +18,12 @@ class Device extends Model
         'id_perangkat_infusee',
         'alamat_ip_infusee',
         'status',
+        'last_ping',
+        'status_device',
     ];
-
+    protected $casts = [
+        'id_perangkat_infusee' => 'string',
+    ];
     public function infusionSessions()
     {
         return $this->hasMany(InfusionSession::class, 'id_perangkat_infusee', 'id_perangkat_infusee');

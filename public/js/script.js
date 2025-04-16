@@ -1,4 +1,22 @@
 // @ts-nocheck
+
+// Fungsi untuk toggle sidebar
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const toggleButton = document.querySelector('.toggle-btn-open');
+
+    sidebar.classList.toggle('show');
+    content.classList.toggle('shift');
+
+    // Sembunyikan tombol ketika sidebar dibuka
+    if (sidebar.classList.contains('show')) {
+        toggleButton.classList.add('hide');
+    } else {
+        toggleButton.classList.remove('hide');
+    }
+}
+
 function showAlert(message, type = 'success', duration = 3000) {
     const alertBox = document.createElement('div');
     alertBox.className = `custom-alert ${type}`;
@@ -49,22 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.remove(); // hapus elemen setelah animasi selesai
     }, 2500);
 }
-    // Fungsi untuk toggle sidebar
-    const toggleButton = document.querySelector('.toggle-btn-open');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-            sidebar?.classList.toggle('show');
-            content?.classList.toggle('shift');
-
-            if (sidebar?.classList.contains('show')) {
-                toggleButton.classList.add('hide');
-            } else {
-                toggleButton.classList.remove('hide');
-            }
-        });
-    }
 
     // ✅ Event untuk tombol cari pasien
     const btnSearch = document.getElementById('btn-search');
@@ -128,8 +130,9 @@ function selectDevice(deviceId) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify({
-            device_id: deviceId
+            id_perangkat_infusee: deviceId
         })
+        
     })
     .then(response => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

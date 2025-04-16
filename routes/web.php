@@ -4,10 +4,12 @@ use App\Http\Controllers\InfuseeController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Middleware\AuthPegawai;
 
 Route::middleware(['auth:pegawai'])->group(function () {
+    
     // Route untuk menampilkan form registrasi
     Route::get('/register', [RegisterController::class, 'index'])->name('register.index');
     Route::get('/register/search', [RegisterController::class, 'search'])->name('register.search');
@@ -20,7 +22,7 @@ Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/devices/status/{deviceId}', [DeviceController::class, 'status']);
     Route::delete('/infusion-session/clear/{id_session}', [DeviceController::class, 'clear'])->name('infusion.clear');
 
-    Route::post('/monitoring/store-from-sensor', [MonitoringInfusController::class, 'storeFromSensor']);
+    Route::post('/monitoring/store-from-sensor', [MonitoringController::class, 'storeFromSensor']);
     Route::get('/get-latest-infus', [InfuseeController::class, 'getLatestInfus']);
 
     Route::post('/infusee/end-session/{id_session}', [InfuseeController::class, 'endSession'])->name('infusee.endSession');
