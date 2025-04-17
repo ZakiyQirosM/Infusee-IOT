@@ -14,12 +14,14 @@ class PegawaiSeeder extends Seeder
             'nama_peg' => 'Buna',
             'no_peg' => '252525',
             'password' => Hash::make('worker321'),
+            'no_wa' => '085156186177',
         ]);
 
         Pegawai::create([
             'nama_peg' => 'Prabski',
             'no_peg' => '242424',
             'password' => Hash::make('worker123'),
+            'no_wa' => '085190083495',
         ]);
     }
 }

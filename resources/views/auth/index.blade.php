@@ -9,7 +9,7 @@
 <div class="content">
 <a href="{{ route('landing') }}" class="back-button" style="position: absolute; top: 20px; left: 20px;">
      ↩
-    </a>
+</a>
     <form method="POST" action="{{ route('login.submit') }}" class="login-container">
         @csrf
         <h2>Login Infusee</h2>
@@ -21,6 +21,10 @@
             <input type="text" name="no_peg" placeholder="NIP" value="{{ old('no_peg') }}">
             <input type="password" name="password" placeholder="Password">
             <button type="submit">Login</button>
+        </div>
+
+        <div class="reset-password-link">
+            <a href="{{ route('password.reset.form') }}">Lupa Password?</a>
         </div>
     </form>
 </div>

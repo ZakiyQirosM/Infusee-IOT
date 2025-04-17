@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('table_pegawai', function (Blueprint $table) {
             $table->id();
             $table->string('nama_peg');
-            $table->string('no_peg')->unique();
+            $table->string('no_peg')->unique(); // no_peg
             $table->string('password');
+            $table->string('no_wa'); // Nomor WhatsApp
             $table->timestamps();
         });
     }
-
 
     public function down(): void
     {

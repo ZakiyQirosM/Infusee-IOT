@@ -8,6 +8,16 @@ use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Middleware\AuthPegawai;
 
+// web.php
+
+use App\Http\Controllers\Auth\ForgotPasswordController;
+
+Route::get('/reset-password-form', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
+Route::post('/reset-password-send', [ForgotPasswordController::class, 'sendResetLink'])->name('password.reset.sendlink');
+
+Route::get('/set-new-password', [ForgotPasswordController::class, 'showNewPasswordForm'])->name('password.set.form');
+Route::post('/set-new-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.set.submit');
+
 Route::middleware(['auth:pegawai'])->group(function () {
     
     // Route untuk menampilkan form registrasi
