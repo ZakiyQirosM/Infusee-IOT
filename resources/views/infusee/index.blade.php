@@ -29,8 +29,7 @@
                 </div>
                 <div class="right">
                     <span>
-                        <i class="fa-solid fa-circle-check status-icon"></i>
-                        {{ $infusee['id_perangkat_infusee'] }}
+                        {{ $infusee['no_reg_pasien'] }}
                     </span>
                 </div>
             </div>
@@ -41,7 +40,7 @@
             {{-- Footer --}}
             <div class="card-footer">
                 <div class="left">
-                    <p>{{ Str::limit($infusee['nama_pasien'], 5) }}</p>
+                    <p>{{ maskNama($infusee['nama_pasien']) }}</p>
                 </div>
                 <div style="
                     display: flex; 

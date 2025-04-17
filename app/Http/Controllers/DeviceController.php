@@ -21,18 +21,29 @@ class DeviceController extends Controller
             'alamat_ip_infusee' => 'required|ip',
         ]);
 
-        $device = Device::updateOrCreate(
-            ['id_perangkat_infusee' => $request->id_perangkat_infusee],
-            [
+        // Cek apakah perangkat sudah ada
+        $device = Device::where('id_perangkat_infusee', $request->id_perangkat_infusee)->first();
+
+        if ($device) {
+            // Kalau perangkat sudah ada, hanya update status_device dan last_ping
+            $device->update([
+                'alamat_ip_infusee' => $request->alamat_ip_infusee,
+                'last_ping' => now(),
+                'status_device' => 'online',
+            ]);
+        } else {
+            // Kalau belum ada, buat baru dengan status = available
+            $device = Device::create([
+                'id_perangkat_infusee' => $request->id_perangkat_infusee,
                 'alamat_ip_infusee' => $request->alamat_ip_infusee,
                 'status' => 'available',
                 'last_ping' => now(),
                 'status_device' => 'online',
-            ]
-        );
+            ]);
+        }
 
         return response()->json([
-            'message' => 'Device ping recorded.',
+            'message' => 'Ping diterima.',
             'device' => $device
         ]);
     }
@@ -117,12 +128,8 @@ class DeviceController extends Controller
 
         $devices = Device::select('id_perangkat_infusee', 'alamat_ip_infusee', 'status', 'status_device')
             ->where('status', 'available')
-            ->where('status_device', 'online') // ✅ Tambahan kondisi ini
-            ->when($usedDeviceIds->count() > 0, function ($query) use ($usedDeviceIds) {
-                return $query->whereNotIn('id_perangkat_infusee', $usedDeviceIds);
-            })
+            ->where('status_device', 'online')
             ->get();
-
 
         return view('devices.index', compact('devices', 'infusionSession', 'patientData'));
     }
@@ -142,10 +149,11 @@ class DeviceController extends Controller
                 ->orderBy('timestamp_infus', 'desc')
                 ->firstOrFail();
 
-            // ✅ Cek apakah perangkat tersedia
-            $device = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
+                $device = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->where('status', 'available')
+                ->where('status_device', 'online')
                 ->first();
+            
 
             if (!$device) {
                 return response()->json([
