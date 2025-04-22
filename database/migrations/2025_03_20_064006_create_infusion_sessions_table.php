@@ -11,21 +11,18 @@ return new class extends Migration
         Schema::create('infusion_sessions', function (Blueprint $table) {
             $table->unsignedBigInteger('id_session')->primary()->autoIncrement();
             $table->string('no_reg_pasien');
-            $table->string('id_perangkat_infusee')->nullable(); // Nullable karena mungkin belum dipilih device
+            $table->string('id_perangkat_infusee')->nullable();
             $table->integer('durasi_infus_jam');
             $table->timestamp('timestamp_infus')->nullable();
             $table->timestamps();
             $table->string('status_sesi_infus')->default('active');
-            
-
-            // 🔗 Foreign Key ke table_pasien
+        
             $table->foreign('no_reg_pasien')
                 ->references('no_reg_pasien')
                 ->on('table_pasien')    
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            // 🔗 Foreign Key ke table_perangkat_infusee
             $table->foreign('id_perangkat_infusee')
                 ->references('id_perangkat_infusee')
                 ->on('table_perangkat_infusee')

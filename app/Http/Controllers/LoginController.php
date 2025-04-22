@@ -21,12 +21,17 @@ class LoginController extends Controller
 
         if ($pegawai && Hash::check($request->password, $pegawai->password)) {
             Auth::guard('pegawai')->login($pegawai);
+
+            $pegawai->update([
+                'last_login_at' => now(),
+                'last_activity_at' => now(),
+            ]);
+
             return redirect('/register');
         }
 
         return redirect()->back()->with('error', 'Login gagal');
     }
-
 
     public function logout()
     {

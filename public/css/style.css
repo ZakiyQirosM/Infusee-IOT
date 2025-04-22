@@ -715,3 +715,104 @@ canvas {
 .confirm-popup .cancel-btn:hover {
     background-color: #cfcfcf;
 }
+
+.activity-container {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.activity-title {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.search-container form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 6px 12px;
+    border: none;
+    background-color: #00c7b4;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #14967F;
+}
+
+.activity-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.activity-th {
+    background-color: #e6e6e6;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.activity-td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.sort-button {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.sort-button:hover {
+    color: #333;
+}
+
+.activity-header-row th {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.activity-data-row td {
+    font-size: 13px;
+    padding: 8px;
+}
+
+@media (max-width: 768px) {
+    .activity-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .search-container form {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-container input,
+    .search-container button {
+        width: 100%;
+    }
+}

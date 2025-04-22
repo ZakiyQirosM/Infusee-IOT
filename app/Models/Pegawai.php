@@ -4,15 +4,27 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-// app/Models/Pegawai.php
 class Pegawai extends Authenticatable
 {
     protected $table = 'table_pegawai';
-    protected $fillable = ['nama_peg', 
-    'no_peg', 
-    'password', 
-    'no_wa'];
+    protected $primaryKey = 'no_peg';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = [
+        'nama_peg', 
+        'no_peg', 
+        'password', 
+        'no_wa',
+        'last_activity',
+        'last_activity_at',
+    ];
     protected $hidden = ['password'];
+
+    public function activities()
+    {
+        return $this->hasMany(HistoryActivity::class, 'no_peg', 'no_peg');
+    }
+
 }
 
 

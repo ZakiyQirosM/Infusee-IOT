@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\InfusionSession;
 use App\Models\MonitoringInfus;
 use App\Models\Patient;
+use App\Models\HistoryActivity;
 use App\Http\Controllers\MonitoringController;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -21,18 +22,15 @@ class DeviceController extends Controller
             'alamat_ip_infusee' => 'required|ip',
         ]);
 
-        // Cek apakah perangkat sudah ada
         $device = Device::where('id_perangkat_infusee', $request->id_perangkat_infusee)->first();
 
         if ($device) {
-            // Kalau perangkat sudah ada, hanya update status_device dan last_ping
             $device->update([
                 'alamat_ip_infusee' => $request->alamat_ip_infusee,
                 'last_ping' => now(),
                 'status_device' => 'online',
             ]);
         } else {
-            // Kalau belum ada, buat baru dengan status = available
             $device = Device::create([
                 'id_perangkat_infusee' => $request->id_perangkat_infusee,
                 'alamat_ip_infusee' => $request->alamat_ip_infusee,
@@ -51,23 +49,18 @@ class DeviceController extends Controller
     public function shutdown(Request $request)
     {
         try {
-            // Ambil id_perangkat_infusee dari request
             $deviceId = $request->input('id_perangkat_infusee');
-            
-            // Periksa apakah id_perangkat_infusee ada di request
+        
             if (!$deviceId) {
                 return response()->json(['message' => 'id_perangkat_infusee required'], 400);
             }
 
-            // Cari perangkat berdasarkan id_perangkat_infusee
             $device = device::where('id_perangkat_infusee', $deviceId)->first();
             
-            // Periksa apakah perangkat ditemukan
             if (!$device) {
                 return response()->json(['message' => 'Device not found'], 404);
             }
 
-            // Update status perangkat menjadi 'offline'
             $device->status_device = 'offline';
             $device->save();
 
@@ -116,7 +109,6 @@ class DeviceController extends Controller
             }
         }
 
-        // ✅ Ambil data pasien
         $patientData = $this->getPatientData();
 
         $usedDeviceIds = InfusionSession::whereNotNull('id_perangkat_infusee')
@@ -136,13 +128,11 @@ class DeviceController extends Controller
 
     public function assign(Request $request)
     {
-        // ✅ Validasi request
         $data = $request->validate([
             'id_perangkat_infusee' => 'required|string|exists:table_perangkat_infusee,id_perangkat_infusee',
         ]);
 
         try {
-            // ✅ Ambil infusion session yang aktif
             $infusion = InfusionSession::with('patient')
                 ->whereNotNull('id_session')
                 ->whereNull('id_perangkat_infusee')
@@ -161,16 +151,14 @@ class DeviceController extends Controller
                 ], 400);
             }
 
-            \DB::beginTransaction(); // ✅ Start Transaction
+            \DB::beginTransaction(); 
 
-            // ✅ Update di table infusion_sessions
             $infusion->update([
                 'id_perangkat_infusee' => $data['id_perangkat_infusee'],
                 'updated_at' => now(),
                 'status_sesi_infus' => 'active',
             ]);
 
-            // Update status perangkat menjadi 'unavailable'
             $affectedRows = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->update(['status' => 'unavailable']);
 
@@ -178,13 +166,17 @@ class DeviceController extends Controller
                 throw new \Exception('Gagal memperbarui status perangkat');
             }
 
+            HistoryActivity::create([
+                'id_session' => $infusion->id_session,
+                'no_peg' => auth()->guard('pegawai')->user()->no_peg,
+                'aktivitas' => 'Memulai sesi infus',
+            ]);
+
             \DB::commit();
 
-            // ✅ Panggil MonitoringController
             $monitoringController = new MonitoringController();
             $monitoringResult = $monitoringController->storeInternal($infusion->id_session);
 
-            // Hapus session setelah perangkat berhasil dipilih
             session()->forget('infusion_session');
 
             return response()->json([
@@ -194,14 +186,14 @@ class DeviceController extends Controller
             ]);
             
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            \DB::rollBack(); // ✅ Rollback jika gagal
+            \DB::rollBack();
             \Log::error('Infusion session tidak ditemukan: ' . $e->getMessage());
 
             return response()->json([
                 'error' => 'Data infusion session tidak ditemukan atau sudah memiliki perangkat.'
             ], 400);
         } catch (\Exception $e) {
-            \DB::rollBack(); // ✅ Rollback jika gagal
+            \DB::rollBack();
             \Log::error('Gagal menyimpan infusion session: ' . $e->getMessage());
 
             return response()->json([
@@ -222,7 +214,6 @@ class DeviceController extends Controller
 
         $session->delete();
 
-        // ✅ Hapus session dengan key yang benar
         if (session()->get('infusion_session.id_session') == $id_session) {
             session()->forget('infusion_session');
         }

@@ -29,7 +29,7 @@
                 </div>
                 <div class="right">
                     <span>
-                        {{ $infusee['no_reg_pasien'] }}
+                        {{ str_repeat('*', strlen($infusee['no_reg_pasien']) - 3) . substr($infusee['no_reg_pasien'], -3) }}
                     </span>
                 </div>
             </div>
@@ -152,7 +152,7 @@
         });
     }
 
-    // Menghitung waktu berjalan; jika waktu sudah melebihi durasi, kembalikan null.
+    // Menghitung waktu berjalan
     function calculateElapsedTime(startTimestamp, durationSeconds) {
         const currentTime = new Date().getTime();
         const elapsedTime = Math.floor((currentTime - startTimestamp) / 1000); 
@@ -167,13 +167,12 @@
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
-    // Fungsi untuk update chart; tambahkan parameter sessionEnded
+    // update chart
     function updateChart(index, value, sessionEnded = false) {
         if (chartInstances[index] && value !== undefined && value !== null) {
             chartInstances[index].data.datasets[0].data = [value, 100 - value];
             chartInstances[index].update();
 
-            // Alert jika nilai ≤ 10 dan sesi belum berakhir.
             const alertElement = document.getElementById(`alert-${index}`);
             if (!sessionEnded && value <= 10) {
                 alertElement.style.display = 'block';
@@ -183,7 +182,7 @@
         }
     }
 
-    // Fungsi untuk memulai timer dan update chart
+    // memulai timer dan update chart
     function startTimer(index, startTimestamp, initialValue, durationMinutes) {
         const durationSeconds = durationMinutes * 3600;
         if (timerInstances[index]) {
@@ -194,11 +193,10 @@
         const endSessionForm = document.getElementById(`end-session-${index}`);
         const card = document.getElementById(`card-${index}`);
 
-        // Tampilkan tombol jika sesi selesai dan card diklik
         card.addEventListener('click', (e) => {
             if (timerEl.innerText === 'Sesi Infus Selesai') {
                 endSessionForm.style.display = 'block';
-                e.stopPropagation(); // Cegah langsung ke event global
+                e.stopPropagation();
             }
         });
 

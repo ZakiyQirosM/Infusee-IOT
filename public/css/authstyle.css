@@ -17,8 +17,8 @@ body::before {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transform: scaleX(-1); /* hanya flip gambar, bukan konten */
-    z-index: -1; /* letakkan di belakang konten */
+    transform: scaleX(-1);
+    z-index: -1;
 }
 
 .back-button {
@@ -110,3 +110,19 @@ button:hover {
     font-size: 0.9em;
     margin-bottom: 10px;
 }
+
+.reset-password-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.reset-password-link a {
+    color: white;
+    font-size: 16px;
+    text-decoration: none; 
+}
+
+.reset-password-link a:hover {
+    color: #00C7B4;
+}
+

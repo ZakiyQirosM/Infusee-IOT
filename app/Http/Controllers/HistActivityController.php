@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\HistoryActivity;
+use Illuminate\Http\Request; // Pastikan ini diimpor dengan benar
+use Illuminate\Support\Facades\DB;
+
+class HistActivityController extends Controller
+{
+    public function index(Request $request)
+    {
+        $sort = $request->get('sort', 'desc');
+        $search = $request->get('search', '');
+
+        $logs = HistoryActivity::with(['pegawai', 'session.patient'])
+            ->where(function ($query) use ($search) {
+                $query->whereHas('pegawai', function ($query) use ($search) {
+                    $query->where('nama_peg', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('session.patient', function ($query) use ($search) {
+                    $query->where('nama_pasien', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('created_at', $sort)
+            ->paginate(20);
+
+        return view('activity.index', compact('logs'));
+    }
+}

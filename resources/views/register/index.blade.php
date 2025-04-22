@@ -6,8 +6,6 @@
 
 <div class='register-container'>
 
-
-
     <form id="register-form" action="{{ route('register.store') }}" method="POST">
         @csrf
         <h2 class="register-title">
@@ -71,7 +69,6 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // ✅ Validasi form
         const form = document.getElementById('register-form');
         form.addEventListener('submit', (e) => {
             e.preventDefault();

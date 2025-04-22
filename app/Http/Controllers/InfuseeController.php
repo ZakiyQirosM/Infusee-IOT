@@ -8,6 +8,8 @@ use App\Models\Patient;
 use App\Models\MonitoringInfus;
 use App\Models\InfusionSession;
 use App\Models\Device;
+use App\Models\HistoryActivity;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class InfuseeController extends Controller
@@ -22,7 +24,6 @@ class InfuseeController extends Controller
     {
         $layout = auth('pegawai')->check() ? 'layouts.main' : 'layouts.guest';
 
-        // Ambil data monitoring + relasi ke session dan patient
         $monitoringData = MonitoringInfus::whereHas('infusionsession', function ($query) {
             $query->where('status_sesi_infus', 'active');
         })->with(['infusionsession.patient'])->get();
@@ -80,8 +81,8 @@ class InfuseeController extends Controller
         $output = '';
         $length = strlen($nama);
         for ($i = 0; $i < $length; $i += 6) {
-            $part = substr($nama, $i, 3); // ambil 3 huruf asli
-            $mask = substr($nama, $i + 3, 3); // ambil 3 huruf berikutnya
+            $part = substr($nama, $i, 3);
+            $mask = substr($nama, $i + 3, 3);
             $output .= $part;
             if ($mask) {
                 $output .= str_repeat('*', strlen($mask));
@@ -101,17 +102,23 @@ class InfuseeController extends Controller
 
     public function endSession($id_session)
     {
-        $session = InfusionSession::findOrFail($id_session);
-        
-        $session->update([
-            'status_sesi_infus' => 'ended'
-        ]);
+    $session = InfusionSession::findOrFail($id_session);
 
-        $device = Device::where('id_perangkat_infusee', $session->id_perangkat_infusee)->first();
-        if ($device) {
-            $device->update(['status' => 'available']);
-        }
+    $session->update([
+        'status_sesi_infus' => 'ended'
+    ]);
 
-        return redirect()->route('infusee.index')->with('success');
+    $device = Device::where('id_perangkat_infusee', $session->id_perangkat_infusee)->first();
+    if ($device) {
+        $device->update(['status' => 'available']);
+    }
+
+    HistoryActivity::create([
+        'id_session' => $session->id_session,
+        'no_peg' => Auth::user()->no_peg,
+        'aktivitas' => 'Mengakhiri sesi infus',
+    ]);
+
+    return redirect()->route('infusee.index')->with('success');
     }
 }

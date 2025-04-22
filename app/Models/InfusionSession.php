@@ -37,4 +37,10 @@ class InfusionSession extends Model
     {
         return $this->hasOne(MonitoringInfus::class, 'id_session', 'id_session');
     }
+
+    public function activities()
+    {
+        return $this->hasMany(HistoryActivity::class, 'id_session', 'id_session');
+    }
+
 }
