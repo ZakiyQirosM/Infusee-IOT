@@ -20,7 +20,7 @@
         <div class="error">{{ $errors->first() }}</div>
     @endif
 
-    <input type="text" name="no_peg" placeholder="Masukkan NIK" value="{{ old('no_peg') }}" required>
+    <input type="text" name="no_peg" placeholder="Masukkan No Pegawai" value="{{ old('no_peg') }}" required>
     <button type="submit">Kirim Link Reset ke WhatsApp</button>
 </form>
 </div>

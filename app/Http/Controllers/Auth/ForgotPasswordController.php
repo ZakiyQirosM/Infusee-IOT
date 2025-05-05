@@ -24,7 +24,7 @@ class ForgotPasswordController extends Controller
         $pegawai = Pegawai::where('no_peg', $request->no_peg)->first();
 
         if (!$pegawai) {
-            return back()->withErrors(['no_peg' => 'NIK tidak ditemukan.']);
+            return back()->withErrors(['no_peg' => 'No Pegawai tidak ditemukan.']);
         }
 
         $url = url(route('password.set.form', ['nik' => $pegawai->no_peg]));
@@ -46,7 +46,7 @@ class ForgotPasswordController extends Controller
         $pegawai = Pegawai::where('no_peg', $nik)->first();
 
         if (!$pegawai) {
-            return redirect()->route('login')->withErrors(['no_peg' => 'NIK tidak ditemukan.']);
+            return redirect()->route('login')->withErrors(['no_peg' => 'No Pegawai tidak ditemukan.']);
         }
 
         return view('auth.reset_new_password', compact('pegawai'));
@@ -62,7 +62,7 @@ class ForgotPasswordController extends Controller
         $pegawai = Pegawai::where('no_peg', $request->no_peg)->first();
 
         if (!$pegawai) {
-            return redirect()->route('login')->withErrors(['no_peg' => 'NIK tidak ditemukan.']);
+            return redirect()->route('login')->withErrors(['no_peg' => 'No Pegawai tidak ditemukan.']);
         }
 
         $pegawai->password = Hash::make($request->password);

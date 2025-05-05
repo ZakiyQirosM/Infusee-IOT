@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\Hash;
-
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -24,19 +24,29 @@ class LoginController extends Controller
 
             $pegawai->update([
                 'last_login_at' => now(),
-                'last_activity_at' => now(),
             ]);
 
             return redirect('/register');
         }
 
-        return redirect()->back()->with('error', 'Login gagal');
+        return redirect()->back()->with('error', 'Ups! NIP atau password salah');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $pegawai = Auth::guard('pegawai')->user();
+
+        if ($pegawai) {
+            DB::table('table_pegawai')
+                ->where('no_peg', $pegawai->no_peg)
+                ->update(['last_activity_at' => now()]);
+        }
+
         Auth::guard('pegawai')->logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/')->with('success', 'Berhasil logout');
     }
-
 }

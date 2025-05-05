@@ -17,12 +17,7 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
-Route::get('/logout', function () {
-    Session::flush();
-    return redirect('/')->with('success', 'Berhasil logout');
-})->name('logout');
-
-Route::get('/log-aktivitas', [HistActivityController::class, 'index'])->name('activity.index');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout'); 
 
 Route::get('/reset-password-form', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset.form');
 Route::post('/reset-password-send', [ForgotPasswordController::class, 'sendResetLink'])->name('password.reset.sendlink');
@@ -41,14 +36,15 @@ Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/devices/status/{deviceId}', [DeviceController::class, 'status']);
     Route::delete('/infusion-session/clear/{id_session}', [DeviceController::class, 'clear'])->name('infusion.clear');
 
-    Route::post('/monitoring/store-from-sensor', [MonitoringController::class, 'storeFromSensor']);
-    Route::get('/get-latest-infus', [InfuseeController::class, 'getLatestInfus']);
-
     Route::post('/infusee/end-session/{id_session}', [InfuseeController::class, 'endSession'])->name('infusee.endSession');
     Route::get('/infusee/{infusee}', [InfuseeController::class, 'show']);
+    Route::post('/infusee/end-session/{id_session}', [InfuseeController::class, 'endSession'])->name('infusee.endSession');
+
+    Route::get('/log-aktivitas', [HistActivityController::class, 'index'])->name('activity.index');
 });
 
 Route::get('/infusee', [InfuseeController::class, 'index'])->name('infusee.index');
+Route::get('/get-latest-infus', [InfuseeController::class, 'getLatestInfus']);
 
 
 

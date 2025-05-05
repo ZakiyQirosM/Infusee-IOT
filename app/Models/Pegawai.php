@@ -15,7 +15,7 @@ class Pegawai extends Authenticatable
         'no_peg', 
         'password', 
         'no_wa',
-        'last_activity',
+        'last_login_at',
         'last_activity_at',
     ];
     protected $hidden = ['password'];
