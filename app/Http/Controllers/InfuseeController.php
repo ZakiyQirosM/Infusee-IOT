@@ -11,13 +11,62 @@ use App\Models\Device;
 use App\Models\HistoryActivity;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class InfuseeController extends Controller
 {
     public function getLatestInfus()
     {
-        $latest = MonitoringInfus::latest()->first();
-        return response()->json($latest);
+        $monitoringData = MonitoringInfus::whereHas('infusionsession', function ($query) {
+            $query->where('status_sesi_infus', 'active');
+        })->with(['infusionsession.patient'])->get();
+
+        $infusees = $monitoringData->map(function ($dinfus) {
+            $session = $dinfus->infusionsession;
+            $patient = $session?->patient;
+
+            $berat_total = $dinfus->berat_total ?? 1;
+            $berat_sekarang = $dinfus->berat_sekarang ?? 0;
+            
+            $persentase = ($berat_total <= 0) ? 0 : round(($berat_sekarang / $berat_total) * 100, 2);
+
+            $tpm = $dinfus->tpm_sensor ?? 0;
+            $reference = $dinfus->tpm_prediksi ?? 0;
+            
+            if ($reference == 0) {
+                $status = 'normal';
+                $bgColor = '#00cc44';
+                $icon = 'fas fa-circle-check';
+            } else {
+                if ($tpm < ($reference * 0.50)) {
+                    $status = 'slow';
+                    $bgColor = '#ff3333';
+                    $icon = 'fa fa-arrow-down';
+                } elseif ($tpm > ($reference * 1.20)) {
+                    $status = 'fast';
+                    $bgColor = '#ff3333';
+                    $icon = 'fa fa-arrow-up';
+                } else {
+                    $status = 'normal';
+                    $bgColor = '#00cc44';
+                    $icon = 'fas fa-circle-check';
+                }
+            }
+
+            return [
+                'id_session' => $dinfus->id_session,
+                'berat_sekarang' => $berat_sekarang,
+                'berat_total' => $berat_total,
+                'persentase_infus' => $persentase,
+                'tpm_sensor' => $dinfus->tpm_sensor,
+                'tpm_prediksi' => $dinfus->tpm_prediksi,
+                'bgColor' => $bgColor,
+                'icon' => $icon,
+                'status' => $status
+            ];
+        });
+
+        return response()->json($infusees);
     }
 
     public function index()
@@ -28,29 +77,39 @@ class InfuseeController extends Controller
             $query->where('status_sesi_infus', 'active');
         })->with(['infusionsession.patient'])->get();
 
-        // Loop untuk map data
         $infusees = $monitoringData->map(function ($dinfus) {
             $session = $dinfus->infusionsession;
             $patient = $session?->patient;
 
             $berat_total = $dinfus->berat_total ?? 1;
             $berat_sekarang = $dinfus->berat_sekarang ?? 0;
-            $persentase = round(($berat_sekarang / $berat_total) * 100, 2);
 
+            if ($berat_total <= 0) {
+                $persentase = 0;
+            } else {
+                $persentase = round(($berat_sekarang / $berat_total) * 100, 2);
+            }
             $tpm = $dinfus->tpm_sensor ?? 0;
             $reference = $dinfus->tpm_prediksi ?? 0;
-            if ($tpm < ($reference * 0.50)) {
-                $status = 'slow';
-                $bgColor = '#ff3333';
-                $icon = 'fa fa-arrow-down';
-            } elseif ($tpm > ($reference * 1.20)) {
-                $status = 'fast';
-                $bgColor = '#ff3333';
-                $icon = 'fa fa-arrow-up';
-            } else {
+            
+            if ($reference == 0) {
                 $status = 'normal';
                 $bgColor = '#00cc44';
                 $icon = 'fas fa-circle-check';
+            } else {
+                if ($tpm < ($reference * 0.50)) {
+                    $status = 'slow';
+                    $bgColor = '#ff3333';
+                    $icon = 'fa fa-arrow-down';
+                } elseif ($tpm > ($reference * 1.20)) {
+                    $status = 'fast';
+                    $bgColor = '#ff3333';
+                    $icon = 'fa fa-arrow-up';
+                } else {
+                    $status = 'normal';
+                    $bgColor = '#00cc44';
+                    $icon = 'fas fa-circle-check';
+                }
             }
 
             return [
@@ -76,21 +135,6 @@ class InfuseeController extends Controller
         return view('infusee.index', compact('infusees', 'layout'));
     }
 
-    function maskNama($nama) 
-    {
-        $output = '';
-        $length = strlen($nama);
-        for ($i = 0; $i < $length; $i += 6) {
-            $part = substr($nama, $i, 3);
-            $mask = substr($nama, $i + 3, 3);
-            $output .= $part;
-            if ($mask) {
-                $output .= str_repeat('*', strlen($mask));
-            }
-        }
-        return $output;
-    }
-
     private function getColorBasedOnPercentage($value)
     {
         if ($value >= 80) return '#00cc44'; // Hijau
@@ -102,23 +146,34 @@ class InfuseeController extends Controller
 
     public function endSession($id_session)
     {
-    $session = InfusionSession::findOrFail($id_session);
+        $session = InfusionSession::findOrFail($id_session);
 
-    $session->update([
-        'status_sesi_infus' => 'ended'
-    ]);
+        $session->update([
+            'status_sesi_infus' => 'ended'
+        ]);
 
-    $device = Device::where('id_perangkat_infusee', $session->id_perangkat_infusee)->first();
-    if ($device) {
-        $device->update(['status' => 'available']);
+        $device = Device::where('id_perangkat_infusee', $session->id_perangkat_infusee)->first();
+        if ($device) {
+            $device->update(['status' => 'available']);
+
+            $iotResponse = Http::timeout(10)
+                ->post('http://' . $device->alamat_ip_infusee . '/stop-monitoring', [
+                    'id_session' => (string)$session->id_session,
+                    'command' => 'stop'
+                ]);
+
+            if (!$iotResponse->successful()) {
+                throw new \Exception('Gagal menghentikan monitoring di perangkat: ' . $iotResponse->body());
+            }
+        }
+
+        HistoryActivity::create([
+            'id_session' => $session->id_session,
+            'no_peg' => Auth::user()->no_peg,
+            'aktivitas' => 'Mengakhiri sesi infus',
+        ]);
+
+        return redirect()->route('infusee.index')->with('success');
     }
 
-    HistoryActivity::create([
-        'id_session' => $session->id_session,
-        'no_peg' => Auth::user()->no_peg,
-        'aktivitas' => 'Mengakhiri sesi infus',
-    ]);
-
-    return redirect()->route('infusee.index')->with('success');
-    }
 }

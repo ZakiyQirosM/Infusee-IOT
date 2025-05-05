@@ -49,11 +49,11 @@
                     background-color: {{ $infusee['bgColor'] }}; 
                     padding: 6px; 
                     border-radius: 6px; 
-                    color: #ffffff;
-                ">
+                    color: #ffffff;">
                     <i class="{{ $infusee['icon'] }}" style="font-size: 10px;"></i>
                     <p style="margin: 0; font-size: 11px; font-weight:bold">
-                        TPM: {{ $infusee['tpm_sensor'] }}/ {{ $infusee['tpm_prediksi']}}
+                        TPM: <span id="tpm-sensor-{{ $index }}">{{ $infusee['tpm_sensor'] }}</span> / 
+                        <span id="tpm-prediksi-{{ $index }}">{{ $infusee['tpm_prediksi'] }}</span>
                     </p>
                 </div>
             </div>
@@ -62,6 +62,7 @@
             <div class="chart-container">
                 <canvas id="chart-{{ $index }}" width="300" height="300"></canvas>
             </div>
+
 
             {{-- Timer --}}
             <div class="Timer">
@@ -182,43 +183,38 @@
         }
     }
 
-    // memulai timer dan update chart
-    function startTimer(index, startTimestamp, initialValue, durationMinutes) {
+    function startTimer(index, startTimestamp, durationMinutes) {
         const durationSeconds = durationMinutes * 3600;
-        if (timerInstances[index]) {
-            clearInterval(timerInstances[index]);
+        
+        if (!timerInstances[index]) {
+            const timerEl = document.getElementById(`timer-${index}`);
+            const endSessionForm = document.getElementById(`end-session-${index}`);
+            const card = document.getElementById(`card-${index}`);
+
+            card.addEventListener('click', (e) => {
+                if (timerEl.innerText === 'Sesi Infus Selesai') {
+                    endSessionForm.style.display = 'block';
+                    e.stopPropagation();
+                }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!card.contains(e.target) && !endSessionForm.contains(e.target)) {
+                    endSessionForm.style.display = 'none';
+                }
+            });
+
+            timerInstances[index] = setInterval(() => {
+                let timerText = calculateElapsedTime(startTimestamp, durationSeconds);
+                if (timerText === null) {
+                    timerEl.innerText = 'Sesi Infus Selesai';
+                    clearInterval(timerInstances[index]);
+                    timerInstances[index] = null;
+                } else {
+                    timerEl.innerText = timerText;
+                }
+            }, 1000);
         }
-
-        const timerEl = document.getElementById(`timer-${index}`);
-        const endSessionForm = document.getElementById(`end-session-${index}`);
-        const card = document.getElementById(`card-${index}`);
-
-        card.addEventListener('click', (e) => {
-            if (timerEl.innerText === 'Sesi Infus Selesai') {
-                endSessionForm.style.display = 'block';
-                e.stopPropagation();
-            }
-        });
-
-        // Sembunyikan tombol jika klik di luar card dan tombol
-        document.addEventListener('click', function (e) {
-            if (!card.contains(e.target) && !endSessionForm.contains(e.target)) {
-                endSessionForm.style.display = 'none';
-            }
-        });
-
-        // Jalankan timer
-        timerInstances[index] = setInterval(() => {
-            let timerText = calculateElapsedTime(startTimestamp, durationSeconds);
-            if (timerText === null) {
-                timerEl.innerText = 'Sesi Infus Selesai';
-                updateChart(index, 0, true);
-                clearInterval(timerInstances[index]);
-            } else {
-                timerEl.innerText = timerText;
-                updateChart(index, initialValue, false);
-            }
-        }, 1000);
     }
 
     document.getElementById('confirmYes').addEventListener('click', () => {
@@ -257,22 +253,62 @@
                 const color = '{{ $infusee['color'] }}';
                 const durationMinutes = {{ $infusee['durasi_infus_jam'] }};
                 createChart(index, initialValue, color);
-                startTimer(index, startTimestamp, initialValue, durationMinutes);
+                startTimer(index, startTimestamp, durationMinutes); 
             })();
         @endforeach
     });
 
-
     setInterval(() => {
-    fetch('/get-latest-infus')
-        .then(res => res.json())
-        .then(data => {
-            const value = item.persentase;
-            const color = getColorBasedOnPercentage(value);
-            updateChart(index, value);
-        });
-}, 60000);
+        fetch('/get-latest-infus')
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                console.log('Data received:', data);
+                data.forEach((infus) => {
+                    const cardElement = document.querySelector(`form[id^="end-session-"][action$="${infus.id_session}"]`);
+                    
+                    if (cardElement) {
+                        const index = cardElement.id.split('-')[2];
+                        const value = infus.persentase_infus;
+                        const color = getColorBasedOnPercentage(value);
 
+                        console.log(`Updating card ${index} with value ${value}`);
+                        
+                        // Update chart
+                        if (chartInstances[index]) {
+                            chartInstances[index].data.datasets[0].data = [value, 100 - value];
+                            chartInstances[index].data.datasets[0].backgroundColor[0] = color;
+                            chartInstances[index].update();
+                        }
+
+                        // Update TPM values dan style
+                        const tpmContainer = document.querySelector(`#card-${index} .card-footer > div[style*="background-color"]`);
+                        if (tpmContainer) {
+                            tpmContainer.style.backgroundColor = infus.bgColor;
+                            
+                            const iconElement = tpmContainer.querySelector('i');
+                            if (iconElement) {
+                                iconElement.className = infus.icon;
+                                iconElement.style.fontSize = '10px';
+                            }
+                        }
+
+                        document.getElementById(`tpm-sensor-${index}`).innerText = infus.tpm_sensor;
+                        document.getElementById(`tpm-prediksi-${index}`).innerText = infus.tpm_prediksi;
+
+                        const alertElement = document.getElementById(`alert-${index}`);
+                        if (alertElement) {
+                            alertElement.style.display = value <= 10 ? 'block' : 'none';
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching or processing data:', error);
+            });
+    }, 60000);
 </script>
 @endsection
 

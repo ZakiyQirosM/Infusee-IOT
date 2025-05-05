@@ -3,7 +3,6 @@
 @section('title', 'Log Activity')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/activity-log.css') }}">
 
 <div class="activity-container mt-4 px-5">
     <!-- Header: Title + Search -->
@@ -42,7 +41,12 @@
                     <td class="activity-td">{{ $log->pegawai->nama_peg ?? '-' }}</td>
                     <td class="activity-td">{{ $log->session->patient->nama_pasien ?? '-' }}</td>
                     <td class="activity-td">{{ $log->session->id_perangkat_infusee ?? '-' }}</td>
-                    <td class="activity-td">{{ $log->aktivitas ?? '-' }}</td>
+                    <td class="activity-td 
+                        @if($log->aktivitas == 'Memulai sesi infus') start-activity 
+                        @elseif($log->aktivitas == 'Mengakhiri sesi infus') end-activity
+                        @endif">
+                        {{ $log->aktivitas ?? '-' }}
+                    </td>
                 </tr>
             @endforeach
         </tbody>
@@ -50,7 +54,8 @@
 
     <!-- Pagination -->
     <div class="pagination d-flex justify-content-center">
-        {{ $logs->appends(['search' => request('search'), 'sort' => request('sort')])->links() }}
+        {{ $logs->appends(request()->query())->links('vendor.pagination.custom') }}
     </div>
+
 </div>
 @endsection

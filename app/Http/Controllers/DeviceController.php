@@ -9,6 +9,7 @@ use App\Models\Patient;
 use App\Models\HistoryActivity;
 use App\Http\Controllers\MonitoringController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -139,26 +140,21 @@ class DeviceController extends Controller
                 ->orderBy('timestamp_infus', 'desc')
                 ->firstOrFail();
 
-                $device = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
+            $device = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->where('status', 'available')
                 ->where('status_device', 'online')
-                ->first();
-            
+                ->firstOrFail();
 
-            if (!$device) {
-                return response()->json([
-                    'error' => 'Perangkat tidak tersedia atau sudah digunakan.'
-                ], 400);
-            }
+            \DB::beginTransaction();
 
-            \DB::beginTransaction(); 
-
+            // Update infusion session
             $infusion->update([
                 'id_perangkat_infusee' => $data['id_perangkat_infusee'],
                 'updated_at' => now(),
                 'status_sesi_infus' => 'active',
             ]);
 
+            // Update device status
             $affectedRows = Device::where('id_perangkat_infusee', $data['id_perangkat_infusee'])
                 ->update(['status' => 'unavailable']);
 
@@ -166,6 +162,30 @@ class DeviceController extends Controller
                 throw new \Exception('Gagal memperbarui status perangkat');
             }
 
+            // 1. Kirim perintah startMonitoring ke ESP32
+            $iotResponse = Http::timeout(10)
+                ->post('http://'.$device->alamat_ip_infusee.'/start-monitoring', [
+                    'id_session' => (string)$infusion->id_session,
+                    'command' => 'start'
+                ]);
+
+            if (!$iotResponse->successful()) {
+                throw new \Exception('Gagal memulai monitoring di perangkat: ' . $iotResponse->body());
+            }
+
+            // 2. Buat record monitoring awal
+            $monitoringController = new MonitoringController();
+            $monitoringResult = $monitoringController->storeInternal(
+                $infusion->id_session,
+                $infusion->berat_awal ?? 0, // berat awal dari database
+                0 // tpm_sensor awal di-set 0
+            );
+
+            if (isset($monitoringResult['error'])) {
+                throw new \Exception('Gagal membuat catatan monitoring awal: ' . $monitoringResult['error']);
+            }
+
+            // 3. Catat aktivitas
             HistoryActivity::create([
                 'id_session' => $infusion->id_session,
                 'no_peg' => auth()->guard('pegawai')->user()->no_peg,
@@ -174,34 +194,26 @@ class DeviceController extends Controller
 
             \DB::commit();
 
-            $monitoringController = new MonitoringController();
-            $monitoringResult = $monitoringController->storeInternal($infusion->id_session);
-
             session()->forget('infusion_session');
 
             return response()->json([
                 'success' => true,
-                'message' => 'Perangkat berhasil dipilih dan data disimpan!',
+                'message' => 'Perangkat berhasil dipilih dan monitoring dimulai!',
                 'id_perangkat_infusee' => $data['id_perangkat_infusee'],
+                'iot_response' => $iotResponse->json()
             ]);
             
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             \DB::rollBack();
-            \Log::error('Infusion session tidak ditemukan: ' . $e->getMessage());
-
             return response()->json([
-                'error' => 'Data infusion session tidak ditemukan atau sudah memiliki perangkat.'
-            ], 400);
+                'error' => 'Data tidak ditemukan: ' . $e->getMessage()
+            ], 404);
         } catch (\Exception $e) {
             \DB::rollBack();
-            \Log::error('Gagal menyimpan infusion session: ' . $e->getMessage());
-
             return response()->json([
-                'error' => 'Gagal menyimpan data infusion session.',
-                'details' => $e->getMessage(),
+                'error' => 'Gagal memulai sesi infus: ' . $e->getMessage()
             ], 500);
         }
-        
     }
 
     public function clear($id_session)
@@ -220,6 +232,5 @@ class DeviceController extends Controller
 
         return redirect()->route('devices.index')->with('success', 'Data pasien berhasil dihapus.');
     }
-
 
 }
