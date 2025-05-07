@@ -30,6 +30,16 @@ class InfuseeController extends Controller
             
             $persentase = ($berat_total <= 0) ? 0 : round(($berat_sekarang / $berat_total) * 100, 2);
 
+            if ($persentase <= 10 && $patient && $patient->no_wa && $session) {
+                $this->sendWhatsAppAlert(
+                    $patient->no_wa,
+                    Auth::user()->nama_peg ?? 'Petugas',
+                    $patient->nama_pasien ?? 'Pasien',
+                    $patient->no_ruangan ?? 'Tidak diketahui',
+                    $persentase
+                );
+            }                        
+
             $tpm = $dinfus->tpm_sensor ?? 0;
             $reference = $dinfus->tpm_prediksi ?? 0;
             
@@ -144,6 +154,28 @@ class InfuseeController extends Controller
         return '#000000'; // Hitam
     }
 
+    private function sendWhatsAppAlert($number, $namaPegawai, $namaPasien, $noRuangan, $persentase)
+    {
+        $token = env('FONNTE_TOKEN');
+
+        $message = "⚠️ *Peringatan Infus Menipis!*
+        Pasien: *{$namaPasien}*
+        Ruangan: *{$noRuangan}*
+        Penanggung Jawab: *{$namaPegawai}*
+        Persentase Infus: *{$persentase}%*
+                
+        Segera lakukan pengecekan!";
+
+        $response = Http::withToken($token)->post('https://api.fonnte.com/send', [
+            'target' => $number,
+            'message' => $message,
+        ]);
+
+        if (!$response->successful()) {
+            \Log::error('Gagal kirim WA Fonnte: ' . $response->body());
+        }
+    }
+
     public function endSession($id_session)
     {
         $session = InfusionSession::findOrFail($id_session);
@@ -176,4 +208,33 @@ class InfuseeController extends Controller
         return redirect()->route('infusee.index')->with('success');
     }
 
+    public function checkSessionStatus(Request $request)
+    {
+        $request->validate([
+            'id_perangkat_infusee' => 'required|string'
+        ]);
+
+        $deviceId = $request->input('id_perangkat_infusee');
+        
+        $session = InfusionSession::where('id_perangkat_infusee', $deviceId)
+                    ->where('status_sesi_infus', 'active')
+                    ->orderBy('timestamp_infus', 'desc')
+                    ->first();
+
+        if ($session) {
+            return response()->json([
+                'status' => 'success',
+                'status_sesi_infus' => 'active',
+                'id_session' => $session->id_session,
+                'patient_id' => $session->no_reg_pasien,
+                'started_at' => $session->timestamp_infus
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'status_sesi_infus' => 'ended',
+            'message' => 'No active session found'
+        ]);
+    }
 }

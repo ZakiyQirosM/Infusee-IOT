@@ -177,8 +177,8 @@ class DeviceController extends Controller
             $monitoringController = new MonitoringController();
             $monitoringResult = $monitoringController->storeInternal(
                 $infusion->id_session,
-                $infusion->berat_awal ?? 0, // berat awal dari database
-                0 // tpm_sensor awal di-set 0
+                $infusion->berat_awal ?? 0,
+                0
             );
 
             if (isset($monitoringResult['error'])) {

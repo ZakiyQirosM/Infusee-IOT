@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HistoryActivity;
-use Illuminate\Http\Request; // Pastikan ini diimpor dengan benar
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class HistActivityController extends Controller
