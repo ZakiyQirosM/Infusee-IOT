@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('infusion_sessions', function (Blueprint $table) {
             $table->unsignedBigInteger('id_session')->primary()->autoIncrement();
+            $table->string('no_peg');
             $table->string('no_reg_pasien');
             $table->string('id_perangkat_infusee')->nullable();
             $table->integer('durasi_infus_jam');
@@ -17,6 +18,11 @@ return new class extends Migration
             $table->timestamps();
             $table->string('status_sesi_infus')->default('active');
         
+            $table->foreign('no_peg')
+                ->references('no_peg')
+                ->on('table_pegawai')
+                ->onDelete('cascade');
+                
             $table->foreign('no_reg_pasien')
                 ->references('no_reg_pasien')
                 ->on('table_pasien')    

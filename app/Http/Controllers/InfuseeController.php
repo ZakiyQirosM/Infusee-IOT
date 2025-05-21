@@ -28,17 +28,7 @@ class InfuseeController extends Controller
             $berat_total = $dinfus->berat_total ?? 1;
             $berat_sekarang = $dinfus->berat_sekarang ?? 0;
             
-            $persentase = ($berat_total <= 0) ? 0 : round(($berat_sekarang / $berat_total) * 100, 2);
-
-            if ($persentase <= 10 && $patient && $patient->no_wa && $session) {
-                $this->sendWhatsAppAlert(
-                    $patient->no_wa,
-                    Auth::user()->nama_peg ?? 'Petugas',
-                    $patient->nama_pasien ?? 'Pasien',
-                    $patient->no_ruangan ?? 'Tidak diketahui',
-                    $persentase
-                );
-            }                        
+            $persentase = ($berat_total <= 0) ? 0 : round(($berat_sekarang / $berat_total) * 100, 2);                     
 
             $tpm = $dinfus->tpm_sensor ?? 0;
             $reference = $dinfus->tpm_prediksi ?? 0;
@@ -133,6 +123,7 @@ class InfuseeController extends Controller
                 'durasi_infus_jam' => $session->durasi_infus_jam ?? 0,
                 'tpm_prediksi' => $dinfus->tpm_prediksi ?? 0,
                 'persentase_infus' => $persentase,
+                'created_at' => $dinfus->created_at ?? '-',
                 'status_sesi_infus' => $dinfus->status_sesi_infus ?? '-',
                 'color' => $this->getColorBasedOnPercentage($persentase ?? 0),
                 'bgColor' => $bgColor,
@@ -152,28 +143,6 @@ class InfuseeController extends Controller
         if ($value >= 40) return '#ff9900'; // Oranye
         if ($value >= 11) return '#ff3333'; // Merah
         return '#000000'; // Hitam
-    }
-
-    private function sendWhatsAppAlert($number, $namaPegawai, $namaPasien, $noRuangan, $persentase)
-    {
-        $token = env('FONNTE_TOKEN');
-
-        $message = "⚠️ *Peringatan Infus Menipis!*
-        Pasien: *{$namaPasien}*
-        Ruangan: *{$noRuangan}*
-        Penanggung Jawab: *{$namaPegawai}*
-        Persentase Infus: *{$persentase}%*
-                
-        Segera lakukan pengecekan!";
-
-        $response = Http::withToken($token)->post('https://api.fonnte.com/send', [
-            'target' => $number,
-            'message' => $message,
-        ]);
-
-        if (!$response->successful()) {
-            \Log::error('Gagal kirim WA Fonnte: ' . $response->body());
-        }
     }
 
     public function endSession($id_session)

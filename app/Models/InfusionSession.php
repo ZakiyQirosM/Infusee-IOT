@@ -14,6 +14,7 @@ class InfusionSession extends Model
     protected $primaryKey = 'id_session';
 
     protected $fillable = [
+        'no_peg',
         'no_reg_pasien',
         'id_perangkat_infusee',
         'durasi_infus_jam',
@@ -41,6 +42,11 @@ class InfusionSession extends Model
     public function activities()
     {
         return $this->hasMany(HistoryActivity::class, 'id_session', 'id_session');
+    }
+
+    public function pegawai()
+    {
+        return $this->belongsTo(Pegawai::class, 'no_peg', 'no_peg');
     }
 
 }

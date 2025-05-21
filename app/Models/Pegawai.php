@@ -25,6 +25,10 @@ class Pegawai extends Authenticatable
         return $this->hasMany(HistoryActivity::class, 'no_peg', 'no_peg');
     }
 
+    public function infusionSessions()
+    {
+        return $this->hasMany(InfusionSession::class, 'no_peg', 'no_peg');
+    }
 }
 
 

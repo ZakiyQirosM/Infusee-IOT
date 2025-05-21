@@ -9,9 +9,8 @@ class MonitoringInfus extends Model
 {
     use HasFactory;
 
-    protected $table = 'table_monitoring_infus'; // Sesuai nama tabel di migration
-
-    public $timestamps = false; // Karena pakai kolom waktu sendiri (bukan created_at & updated_at) 
+    protected $table = 'table_monitoring_infus';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_session',
@@ -19,10 +18,11 @@ class MonitoringInfus extends Model
         'berat_sekarang',
         'tpm_sensor',
         'tpm_prediksi',
+        'created_at',
         'waktu',
+        'wa_notif_sent',
     ];
     
-
     public function infusionsession()
     {
         return $this->belongsTo(InfusionSession::class, 'id_session', 'id_session');

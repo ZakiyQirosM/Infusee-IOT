@@ -11,11 +11,13 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('id_session');
             $table->float('berat_total');
-            $table->float('berat_sekarang')->nullable();        // Berat real-time dari sensor loadcell
-            $table->integer('tpm_sensor');       // TPM aktual dari sensor opto
-            $table->float('tpm_prediksi')->nullable();         // TPM hasil prediksi AI
+            $table->float('berat_sekarang')->nullable();
+            $table->integer('tpm_sensor');
+            $table->float('tpm_prediksi')->nullable();
+            $table->timestamp('created_at')->useCurrent();
             $table->timestamp('waktu')->useCurrent()->useCurrentOnUpdate();
-            
+            $table->boolean('wa_notif_sent')->default(false);
+
             $table->foreign('id_session')
                   ->references('id_session')
                   ->on('infusion_sessions')

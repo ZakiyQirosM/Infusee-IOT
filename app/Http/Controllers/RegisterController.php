@@ -61,6 +61,7 @@ class RegisterController extends Controller
             }
 
             $infusion = InfusionSession::create([
+                'no_peg' => auth()->guard('pegawai')->user()->no_peg,
                 'no_reg_pasien' => $patient->no_reg_pasien,
                 'durasi_infus_jam' => intval($data['durasi']),
                 'timestamp_infus' => Carbon::now()->toDateTimeString(),

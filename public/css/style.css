@@ -22,7 +22,7 @@ h2 {
     color: white;
     padding: 20px;
     position: fixed;
-    left: -350px; /* Hide sidebar */
+    left: -350px; 
     top: 0;
     transition: left 0.3s ease;
     z-index: 1000;
@@ -74,30 +74,30 @@ h2 {
 }
 
 .sidebar ul li.active {
-    background-color: #00C7B4; /* Warna merah untuk highlight */
+    background-color: #00C7B4;
     border-radius: 8px;
     z-index: 1000;
 }
 
 .sidebar ul li.active a {
-    color: #fff; /* Warna teks menjadi putih saat aktif */
+    color: #fff;
     font-weight: bold;
 }
 
 
 .sidebar ul li:not(.active):hover {
-    background-color: #053b51; /* Warna biru tua untuk highlight */
+    background-color: #053b51;
     border-radius: 8px;
     transition: background-color 0.2s ease;
 }
-/* Hapus semua styling .logout-link jika tidak digunakan */
+
 .logout-section {
     position: absolute;
     bottom: 80px;
     left: 0;
     width: 100%;
     display: flex;
-    justify-content: center; /* Ini yang akan memusatkan */
+    justify-content: center;
     align-items: center;
 }
 
@@ -479,7 +479,7 @@ canvas {
 
 .sidebar svg {
     position: relative;
-    top: 3px; /* sesuaikan nilai ini sesuai kebutuhan */
+    top: 3px;
     margin-right: 8px;
 }
 
@@ -607,6 +607,7 @@ canvas {
 .alert-persen {
     font-size: 10px;
     padding: 12px;
+    text-align: center;
     margin-top: 10px;
     border-radius: 6px;
     font-weight: bold;
@@ -617,7 +618,7 @@ canvas {
 }
 
 .end-session-btn {
-    width: 100%; /* Menyesuaikan lebar elemen induk */
+    width: 100%;
     justify-content: center;
     font-size: 12px;
     color: white;
@@ -625,17 +626,17 @@ canvas {
     font-weight: bold;
     margin-top: 10px;
     border-radius: 6px;
-    background-color: #dc3545; /* Merah */
+    background-color: #dc3545;
     border: 1px solid #dc3545;
-    box-sizing: border-box; /* Menghindari overflow padding */
-    cursor: pointer; /* Menjadikan kursor berbentuk pointer saat hover */
+    box-sizing: border-box;
+    cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .end-session-btn:hover {
-    background-color: #c82333; /* Merah yang lebih gelap saat hover */
+    background-color: #c82333;
     border-color: #bd2130;
-    transform: translateY(-2px); /* Sedikit efek angkat saat hover */
+    transform: translateY(-2px);
 }
 
 
