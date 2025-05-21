@@ -11,19 +11,35 @@ if (!function_exists('checkLogin')) {
 
 if (!function_exists('maskNama')) {
     function maskNama($nama) {
-        $nama = substr($nama, 0, 9);
-        $output = '';
-        $length = strlen($nama);
+        $kata = explode(' ', $nama);
+        $hasil = [];
 
-        for ($i = 0; $i < $length; $i += 6) {
-            $part = substr($nama, $i, 3);
-            $mask = substr($nama, $i + 3, 3);
-            $output .= $part;
-            if ($mask) {
-                $output .= str_repeat('*', strlen($mask));
+        foreach ($kata as $i => $k) {
+            $len = strlen($k);
+
+            // Kata pertama dan kedua
+            if ($i == 0 || $i == 1) {
+                if ($len > 2) {
+                    $hasil[] = substr($k, 0, $len - 2) . '**';
+                } else {
+                    $hasil[] = str_repeat('*', $len);
+                }
+            }
+            // Kata ketiga
+            elseif ($i == 2) {
+                if ($len > 2) {
+                    $hasil[] = substr($k, 0, 2) . str_repeat('*', $len - 2);
+                } else {
+                    $hasil[] = str_repeat('*', $len);
+                }
+            }
+            // Kata ke-4 dst
+            else {
+                $hasil[] = str_repeat('*', $len);
             }
         }
 
-        return $output;
+        return implode(' ', $hasil);
     }
 }
+

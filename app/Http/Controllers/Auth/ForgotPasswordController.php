@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class ForgotPasswordController extends Controller
 {
@@ -27,7 +28,10 @@ class ForgotPasswordController extends Controller
             return back()->withErrors(['no_peg' => 'No Pegawai tidak ditemukan.']);
         }
 
-        $url = url(route('password.set.form', ['nik' => $pegawai->no_peg]));
+        // Enkripsi NIK
+        $encryptedNik = Crypt::encryptString($pegawai->no_peg);
+        $url = url(route('password.set.form', ['nik' => $encryptedNik]));
+
         $message = "Halo {$pegawai->nama_peg},\nKlik link berikut untuk atur ulang password Anda:\n$url";
 
         Http::withHeaders([
@@ -42,14 +46,15 @@ class ForgotPasswordController extends Controller
 
     public function showNewPasswordForm(Request $request)
     {
-        $nik = $request->query('nik');
-        $pegawai = Pegawai::where('no_peg', $nik)->first();
+        try {
+            $decryptedNik = Crypt::decryptString($request->query('nik'));
+            $pegawai = Pegawai::where('no_peg', $decryptedNik)->firstOrFail();
 
-        if (!$pegawai) {
-            return redirect()->route('login')->withErrors(['no_peg' => 'No Pegawai tidak ditemukan.']);
+            return view('auth.reset_new_password', compact('pegawai'));
+
+        } catch (\Exception $e) {
+            return redirect()->route('login')->withErrors(['link' => 'Link tidak valid atau telah kadaluarsa.']);
         }
-
-        return view('auth.reset_new_password', compact('pegawai'));
     }
 
     public function resetPassword(Request $request)
