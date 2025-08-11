@@ -23,43 +23,31 @@ For IoT and ML modules, see:
 ## 🚀 Installation
 1. **Clone Repository**
    ```
-   bash
    git clone https://github.com/ZakiyQirosM/Infusee-AIOT-Web.git
    cd Infusee-AIOT-Web
    ```
 2. **Install Dependencies**
     ```
-    bash
     composer install
     npm install
     ```
 3. **Environment Setup**
     ```
-    bash
     cp .env.example .env
     php artisan key:generate
     ```
 4. **Database Migration**
     ```
-    bash
     php artisan migrate
     ```
 5. **Run the Application**
     ```
-    bash
     php artisan serve
     ```
-   
-## Supporting Documents
-### Presentation Deck
-- Link: [Presentation Deck](https://drive.google.com/drive/folders/1JgbOCcnIjJaw0wBBHcMKpqI83xUvOQuF?usp=sharing)
-
-### Business Model Canvas
-![BMC](Pictures/BMC.png)
-
+    
 ### Short Video
 Provide a link to your short video, that should includes the project background and how it works.
-- Link: [Short Video](https://youtube.com/shorts/aCx1_MFqNic?feature=share)
+- Link: [Short Video](https://youtu.be/jgHIiBOI-l4?si=ACNTCQNRtSOIibn8)
 
 
 ## How to Cite
@@ -71,7 +59,6 @@ If you find this project useful, we'd grateful if you cite this repository:
 ```
 
 ## License
-For academic and non-commercial use only.
 
 ## Acknowledgement
-This project entitled <b>"GALURA - Galucoma Detection with Advanced Retinal Analysis"</b> is supported and funded by Startup Campus Indonesia and Indonesian Ministry of Education and Culture through the "**Kampus Merdeka: Magang dan Studi Independen Bersertifikasi (MSIB)**" program.
+The project entitled <b>Infusee AIoT</b> was developed as part of an internship program at Semen Gresik Hospital.
